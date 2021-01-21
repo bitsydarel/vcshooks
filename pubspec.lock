@@ -16,7 +16,7 @@ packages:
     source: hosted
     version: "0.41.2"
   args:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: args
       url: "https://pub.dartlang.org"
@@ -100,7 +100,7 @@ packages:
     source: hosted
     version: "1.2.0"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       url: "https://pub.dartlang.org"
@@ -128,7 +128,7 @@ packages:
     source: hosted
     version: "0.16.1"
   io:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: io
       url: "https://pub.dartlang.org"
@@ -156,7 +156,7 @@ packages:
     source: hosted
     version: "0.12.9"
   meta:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: meta
       url: "https://pub.dartlang.org"
@@ -198,7 +198,7 @@ packages:
     source: hosted
     version: "1.9.3"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       url: "https://pub.dartlang.org"

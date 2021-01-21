@@ -1,14 +1,20 @@
-name: dart_github_hooks
+name: dart_hooks
 description: A sample command-line application.
-# version: 1.0.0
-# homepage: https://www.example.com
+version: 0.1.0
+homepage: https://github.com/bitsydarel/dart_github_hooks
+repository: https://github.com/bitsydarel/dart_github_hooks
+issue_tracker: https://github.com/bitsydarel/dart_github_hooks/issues
 
 environment:
   sdk: '>=2.10.0 <3.0.0'
 
-#dependencies:
-#  path: ^1.7.0
+dependencies:
+  path: ^1.7.0
+  args: ^1.6.0
+  http: ^0.12.2
+  meta: ^1.2.4
+  io: ^0.3.4
 
 dev_dependencies:
   flutter_code_style: ^2.0.1
-  test: ^1.14.4
+  test: ^1.15.7
