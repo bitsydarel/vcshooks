@@ -54,7 +54,6 @@ class GitHooksHandler {
   ///
   GitHooksHandler(this.operatingSystem, this.hooksDir);
 
-  ///
   Future<void> setup() async {
     final Directory currentGitHooks = await getCurrentGitHooksDirectory();
 
