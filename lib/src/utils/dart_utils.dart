@@ -40,7 +40,7 @@ import 'package:dart_hooks/src/operating_system.dart';
 
 ///
 const String _dbstyleguidecheckerUrl =
-    'https://github.com/bitsydarel/dbstyleguidechecker/releases/download/v2.0.4';
+    'https://github.com/bitsydarel/dbstyleguidechecker/releases/download/v2.0.5';
 
 ///
 extension DartSupportedOsExtensions on OperatingSystem {
@@ -73,10 +73,10 @@ extension DartSupportedOsExtensions on OperatingSystem {
   }
 
   ///
-  String testRunnerTool() => 'pub';
+  String getTestTool() => 'pub';
 
   ///
-  List<String> testRunnerToolArguments(final Directory testDir) {
+  List<String> getTestToolArguments(final Directory testDir) {
     return <String>['run', 'test', '-r', 'json', testDir.path];
   }
 }

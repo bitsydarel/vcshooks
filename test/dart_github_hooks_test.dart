@@ -34,10 +34,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import 'dart:convert';
+
 import 'package:test/test.dart';
 
 void main() {
-  test('calculate', () {
-    expect('', 42);
+  test('split check', () {
+    final String line =
+        "ERROR, The argument type 'String' can't be assigned to the parameter type 'num'. in file example/lib/main.dart at line 3, line column 7";
+    expect(
+      line.startsWith(RegExp('(ERROR|WARNING|INVALID)')),
+      true,
+    );
   });
 }
