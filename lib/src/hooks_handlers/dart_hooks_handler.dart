@@ -40,6 +40,7 @@ class DartHooksHandler extends GitHooksHandler {
     );
 
     stdout.writeln('Exit code is ${result.exitCode}');
+    stdout.writeln('${result.stderr.toString()}\n${result.stdout.toString()}');
 
     if (result.exitCode != ExitCode.success.code) {
       return '${result.stderr.toString()}\n${result.stdout.toString()}';
