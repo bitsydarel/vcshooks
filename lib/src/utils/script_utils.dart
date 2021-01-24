@@ -37,6 +37,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dart_hooks/dart_hooks.dart';
+import 'package:dart_hooks/src/script_config.dart';
 import 'package:dart_hooks/src/utils/exceptions.dart';
 import 'package:io/ansi.dart';
 import 'package:meta/meta.dart';
@@ -87,12 +88,12 @@ void printHelpMessage([final String message]) {
   }
 
   final String options =
-  LineSplitter.split(argumentParser.usage).map((String l) => l).join('\n');
+      LineSplitter.split(argumentParser.usage).map((String l) => l).join('\n');
 
   stdout.writeln(
     'Usage: dart_hooks --$_projectTypeParameter '
-        '[${supportedProjectType.join(', ')}] <local project directory>'
-        '\nOptions:\n$options',
+    '[${supportedProjectType.join(', ')}] <local project directory>'
+    '\nOptions:\n$options',
   );
 }
 
@@ -110,19 +111,18 @@ class ScriptArgument {
   final OperatingSystem operatingSystem;
 
   /// Git Hooks Directory.
-  final Directory gitHooksDir;
+  final Directory hooksDir;
 
   /// Create [ScriptArgument] with [projectType] and [projectDir].
   const ScriptArgument({
     @required this.projectType,
     @required this.projectDir,
     @required this.operatingSystem,
-    @required this.gitHooksDir,
-  })
-      : assert(projectDir != null, 'Project Dir should be specified'),
+    @required this.hooksDir,
+  })  : assert(projectDir != null, 'Project Dir should be specified'),
         assert(projectType != null, 'Project Type should be specified'),
         assert(operatingSystem != null, 'Operating system should be specified'),
-        assert(gitHooksDir != null, 'Git hooks dir should be specified');
+        assert(hooksDir != null, 'Git hooks dir should be specified');
 
   /// Create a [ScriptArgument] from the provided [argResults].
   factory ScriptArgument.from(final ArgResults argResults) {
@@ -138,7 +138,16 @@ class ScriptArgument {
       projectType: projectType,
       projectDir: projectDir,
       operatingSystem: currentOs,
-      gitHooksDir: gitHooksDir,
+      hooksDir: gitHooksDir,
+    );
+  }
+
+  /// Convert the [ScriptArgument] to the [ScriptConfig].
+  ScriptConfig toScriptConfig() {
+    return ScriptConfig(
+      projectType: projectType,
+      projectDir: projectDir,
+      hooksDir: hooksDir,
     );
   }
 
@@ -159,7 +168,7 @@ class ScriptArgument {
     } else {
       throw UnrecoverableException(
         '$_projectTypeParameter parameter is required, '
-            "supported values are ${supportedProjectType.join(", ")}",
+        "supported values are ${supportedProjectType.join(", ")}",
         exitMissingRequiredArgument,
       );
     }
@@ -195,7 +204,7 @@ class ScriptArgument {
     } on Exception catch (exception) {
       throw UnrecoverableException(
         'git hooks dir could not be created.\n'
-            'System error: ${exception.toString()}',
+        'System error: ${exception.toString()}',
         exitUnexpectedError,
       );
     }

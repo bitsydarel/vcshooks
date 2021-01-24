@@ -39,7 +39,6 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:dart_hooks/dart_hooks.dart';
-import 'package:dart_hooks/src/git_hooks_handler.dart';
 
 Future<void> main(List<String> arguments) async {
   ArgResults argResults;
@@ -66,15 +65,17 @@ Future<void> main(List<String> arguments) async {
 
       final SoftwareDownloader softwareDownloader = _getSoftwareDownloader(
         scriptArgument.operatingSystem,
-        scriptArgument.gitHooksDir,
+        scriptArgument.hooksDir,
         scriptArgument,
       );
 
       await softwareDownloader.downloadPreCommitTools();
 
-      final GitHooksHandler initializer = GitHooksHandler(
-        scriptArgument.operatingSystem,
-        scriptArgument.gitHooksDir,
+      final HooksHandler initializer = DartHooksHandler(
+        os: scriptArgument.operatingSystem,
+        projectType: scriptArgument.projectType,
+        projectDir: scriptArgument.projectDir,
+        gitHooksDir: scriptArgument.hooksDir,
       );
 
       await initializer.setup();

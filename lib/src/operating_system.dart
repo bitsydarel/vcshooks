@@ -62,16 +62,52 @@ OperatingSystem getCurrentOs() {
 }
 
 
-///
+/// [OperatingSystem] extensions functions.
 extension SupportedOsExtensions on OperatingSystem {
-  ///
+  /// Get the displayable name of the operating system.
   String name() => Platform.operatingSystem;
 
-  ///
+  /// Get the displayable version of the operating system.
   String version() => Platform.operatingSystemVersion;
+
+  /// Get the permission tool used to change files permissions.
+  String getPermissionTool() {
+    switch (this) {
+      case OperatingSystem.windows:
+        return 'cacls';
+      case OperatingSystem.macOs:
+      case OperatingSystem.linux:
+        return 'find';
+      default:
+        throw const UnsupportedOsException();
+    }
+  }
+
+  /// Get permission tool arguments used to change files permissions
+  List<String> getPermissionToolArgs(final Directory directory) {
+    switch (this) {
+      case OperatingSystem.windows:
+        return <String>[directory.path, '/t', '/q', '/grant', 'Everyone:RX'];
+      case OperatingSystem.macOs:
+      case OperatingSystem.linux:
+        return <String>[
+          directory.path,
+          '-type',
+          'f',
+          '-exec',
+          'chmod',
+          '+x',
+          '{}',
+          ';',
+        ];
+      default:
+        throw const UnsupportedOsException();
+    }
+  }
 }
 
-///
+/// [Exception] that's thrown when the script is used on an [OperatingSystem]
+/// that's not supported.
 class UnsupportedOsException implements Exception {
   ///
   const UnsupportedOsException();
