@@ -35,44 +35,33 @@
  */
 
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:hooks/hooks.dart';
-import 'package:http/http.dart' as http;
-import 'package:hooks/src/software_downloader.dart';
-import 'package:hooks/src/operating_system.dart';
-import 'package:hooks/src/utils/dart_utils.dart';
+import 'package:hooks/src/hooks_handlers/dart_hooks_handler.dart';
+import 'package:hooks/src/utils/exceptions.dart';
+import 'package:io/io.dart';
 
-/// Dart software downloader
-///
-/// Download software required to execute hooks on a dart project.
-class DartSoftwareDownloader extends SoftwareDownloader {
-  /// Create a [DartSoftwareDownloader] with the provided [hooksDir] and [os].
-  const DartSoftwareDownloader(
-    Directory hooksDir,
-    OperatingSystem os,
-  ) : super(hooksDir, os);
-
+/// Flutter hooks handler take care of executing hooks on a flutter project.
+class FlutterHooksHandler extends DartHooksHandler {
   @override
-  Future<void> downloadPreCommitTools() async {
-    final String staticAnalyzerFileName = currentOs.getCodeStyleCheckFileName();
-    final String staticAnalyzerLink = currentOs.getCodeStyleCheckDownloadLink();
+  Future<String> executeUnitTests() async {
+    final Directory testDir = Directory('${config.projectDir.path}/test');
 
-    final File staticAnalyzer = File(
-      '${hooksDir.path}/$staticAnalyzerFileName',
-    );
-
-    try {
-      final Uint8List response = await http.readBytes(staticAnalyzerLink);
-
-      staticAnalyzer.writeAsBytes(response, flush: true);
-
-      stdout.writeln('Downloaded $staticAnalyzerFileName for static analysis');
-    } on http.ClientException catch (exception) {
+    if (!testDir.existsSync()) {
       throw UnrecoverableException(
-        '${exception.uri} : ${exception.message}',
-        exitUnexpectedError,
+        'Unit test are enabled but test dir doest not exit (${testDir.path})',
+        ExitCode.config.code,
       );
     }
+
+    final List<DartTest> tests = executeTest(
+      'flutter',
+      <String>['test', '--machine', testDir.path],
+    ).where((DartTest element) => !element.succeeded).toList();
+
+    if (tests.isNotEmpty) {
+      return tests.map((DartTest e) => e.toString()).join('\n');
+    }
+
+    return '';
   }
 }

@@ -23,8 +23,8 @@
  * THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
  * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  * OR
@@ -34,17 +34,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import 'dart:convert';
+import 'package:hooks/src/script_config.dart';
 
-import 'package:test/test.dart';
+/// Script Configuration cache.
+abstract class ConfigCache {
+  /// Save the script's configuration.
+  Future<void> saveScriptConfig(final ScriptConfig config);
 
-void main() {
-  test('split check', () {
-    final String line =
-        "ERROR, The argument type 'String' can't be assigned to the parameter type 'num'. in file example/lib/main.dart at line 3, line column 7";
-    expect(
-      line.startsWith(RegExp('(ERROR|WARNING|INVALID)')),
-      true,
-    );
-  });
+  /// Load the script's configuration.
+  Future<ScriptConfig> loadScriptConfig();
+
+  /// Refresh the script's configuration.
+  Future<ScriptConfig> refreshScriptConfig();
 }

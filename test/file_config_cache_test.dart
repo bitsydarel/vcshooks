@@ -35,44 +35,42 @@
  */
 
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:hooks/hooks.dart';
-import 'package:http/http.dart' as http;
-import 'package:hooks/src/software_downloader.dart';
-import 'package:hooks/src/operating_system.dart';
-import 'package:hooks/src/utils/dart_utils.dart';
+import 'package:hooks/src/config_cache.dart';
+import 'package:hooks/src/config_caches/file_config_cache.dart';
+import 'package:hooks/src/script_config.dart';
+import 'package:test/test.dart';
 
-/// Dart software downloader
-///
-/// Download software required to execute hooks on a dart project.
-class DartSoftwareDownloader extends SoftwareDownloader {
-  /// Create a [DartSoftwareDownloader] with the provided [hooksDir] and [os].
-  const DartSoftwareDownloader(
-    Directory hooksDir,
-    OperatingSystem os,
-  ) : super(hooksDir, os);
+void main() {
+  group(
+    'file config cache tests',
+    () {
+      test(
+        'should return null on load config if not found in the hooks dir',
+        () {
+          final ConfigCache configCache = FileConfigCache(
+            hooksDir: Directory.current,
+          );
 
-  @override
-  Future<void> downloadPreCommitTools() async {
-    final String staticAnalyzerFileName = currentOs.getCodeStyleCheckFileName();
-    final String staticAnalyzerLink = currentOs.getCodeStyleCheckDownloadLink();
-
-    final File staticAnalyzer = File(
-      '${hooksDir.path}/$staticAnalyzerFileName',
-    );
-
-    try {
-      final Uint8List response = await http.readBytes(staticAnalyzerLink);
-
-      staticAnalyzer.writeAsBytes(response, flush: true);
-
-      stdout.writeln('Downloaded $staticAnalyzerFileName for static analysis');
-    } on http.ClientException catch (exception) {
-      throw UnrecoverableException(
-        '${exception.uri} : ${exception.message}',
-        exitUnexpectedError,
+          expect(configCache.loadScriptConfig(), completion(isNull));
+        },
       );
-    }
-  }
+
+      test(
+        'should return script config on load config if found in hooks dir',
+        () {
+          final Directory hooksDir = Directory(
+            '${Directory.current.path}/test/resources',
+          );
+
+          final ConfigCache configCache = FileConfigCache(hooksDir: hooksDir);
+
+          expect(
+            configCache.loadScriptConfig(),
+            completion(isA<ScriptConfig>()),
+          );
+        },
+      );
+    },
+  );
 }

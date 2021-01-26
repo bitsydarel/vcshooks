@@ -16,17 +16,17 @@
  *      documentation and/or other materials provided with the distribution.
  *
  *      * Neither the name of the copyright holder nor the names of its
- *      contributors may be used to endorse or promote products derived from 
+ *      contributors may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY
  * THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER 
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  * OR
  * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
  * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
@@ -37,8 +37,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_hooks/dart_hooks.dart';
+import 'package:hooks/hooks.dart';
+import 'package:hooks/src/config_cache.dart';
+import 'package:hooks/src/config_caches/file_config_cache.dart';
+import 'package:hooks/src/script_config.dart';
 import 'package:io/ansi.dart';
+import 'package:io/io.dart';
 
 // Run the script with the provided [arguments].
 Future<void> main(List<String> arguments) async {
@@ -48,23 +52,31 @@ Future<void> main(List<String> arguments) async {
     () async {
       final OperatingSystem os = getCurrentOs();
 
-      final Directory hooksDir = Directory(
-        '${Directory.current.path}/.git_hooks_tools',
-      );
+      final Directory hooksDir = await GitHooksHandler.getCurrentHooksDir();
 
       if (!hooksDir.existsSync()) {
-        stderr.writeln(
-          'Git Hooks directory not found\nPlease run setup tools',
+        throw UnrecoverableException(
+          'Git Hooks directory ${hooksDir.path} not found\n'
+          'Please run setup tool',
+          ExitCode.config.code,
         );
       }
 
-      final GitHooksHandler handler = DartHooksHandler(
-        os: os,
-        projectDir: Directory.current,
-        gitHooksDir: hooksDir,
-      );
+      final ScriptConfig config = await _getConfig(hooksDir);
 
-      await handler.executeBeforeCommitChecks();
+      if (config == null) {
+        throw UnrecoverableException(
+          'Script config not found in dir ${hooksDir.path}\n'
+          'Please run setup tool',
+          ExitCode.config.code,
+        );
+      }
+
+      config.validateConfig(Directory.current.path, hooksDir.path);
+
+      final HooksHandler handler = _getHookHandler(os, config);
+
+      await handler.executePreCommitChecks();
     },
     (Object error, StackTrace trace) {
       if (error is UnrecoverableException) {
@@ -76,4 +88,25 @@ Future<void> main(List<String> arguments) async {
       }
     },
   );
+}
+
+Future<ScriptConfig> _getConfig(final Directory hooksDir) async {
+  final ConfigCache configCache = FileConfigCache(hooksDir: hooksDir);
+
+  return configCache.loadScriptConfig();
+}
+
+HooksHandler _getHookHandler(
+  final OperatingSystem operatingSystem,
+  final ScriptConfig config,
+) {
+  switch (config.projectType) {
+    case dartProjectType:
+      return DartHooksHandler(os: operatingSystem, config: config);
+    default:
+      throw UnrecoverableException(
+        'Project type not supported\nPlease run setup tool',
+        ExitCode.config.code,
+      );
+  }
 }

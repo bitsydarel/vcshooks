@@ -34,45 +34,60 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:hooks/hooks.dart';
-import 'package:http/http.dart' as http;
-import 'package:hooks/src/software_downloader.dart';
-import 'package:hooks/src/operating_system.dart';
-import 'package:hooks/src/utils/dart_utils.dart';
+import 'package:hooks/src/config_cache.dart';
+import 'package:hooks/src/script_config.dart';
+import 'package:meta/meta.dart';
 
-/// Dart software downloader
-///
-/// Download software required to execute hooks on a dart project.
-class DartSoftwareDownloader extends SoftwareDownloader {
-  /// Create a [DartSoftwareDownloader] with the provided [hooksDir] and [os].
-  const DartSoftwareDownloader(
-    Directory hooksDir,
-    OperatingSystem os,
-  ) : super(hooksDir, os);
+/// [ConfigCache] that save [ScriptConfig] to a file.
+class FileConfigCache extends ConfigCache {
+  ScriptConfig _cachedConfig;
+
+  final String _configFilePath;
+
+  /// Create [FileConfigCache] with the specified [hooksDir].
+  FileConfigCache({@required Directory hooksDir})
+      : assert(hooksDir != null, "Hooks Directory can't be null"),
+        _configFilePath = '${hooksDir.path}/.script_config';
 
   @override
-  Future<void> downloadPreCommitTools() async {
-    final String staticAnalyzerFileName = currentOs.getCodeStyleCheckFileName();
-    final String staticAnalyzerLink = currentOs.getCodeStyleCheckDownloadLink();
+  Future<ScriptConfig> loadScriptConfig() async {
+    return _cachedConfig ??= await _loadFromFile();
+  }
 
-    final File staticAnalyzer = File(
-      '${hooksDir.path}/$staticAnalyzerFileName',
-    );
+  @override
+  Future<void> saveScriptConfig(final ScriptConfig config) async {
+    final File configFile = File(_configFilePath);
 
-    try {
-      final Uint8List response = await http.readBytes(staticAnalyzerLink);
+    final Map<String, Object> mappedConfig = config.toJson();
 
-      staticAnalyzer.writeAsBytes(response, flush: true);
+    final String jsonConfig = jsonEncode(mappedConfig);
 
-      stdout.writeln('Downloaded $staticAnalyzerFileName for static analysis');
-    } on http.ClientException catch (exception) {
-      throw UnrecoverableException(
-        '${exception.uri} : ${exception.message}',
-        exitUnexpectedError,
-      );
+    configFile.writeAsStringSync(jsonConfig, mode: FileMode.write, flush: true);
+  }
+
+  @override
+  Future<ScriptConfig> refreshScriptConfig() async {
+    final ScriptConfig config = await _loadFromFile();
+    _cachedConfig = config;
+    return config;
+  }
+
+  Future<ScriptConfig> _loadFromFile() async {
+    final File configFile = File(_configFilePath);
+
+    if (configFile.existsSync()) {
+      final String rawConfig = configFile.readAsStringSync();
+
+      final Object jsonConfig = jsonDecode(rawConfig);
+
+      if (jsonConfig is Map<String, Object>) {
+        return ScriptConfig.fromJson(jsonConfig);
+      }
     }
+
+    return null;
   }
 }

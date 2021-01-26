@@ -16,17 +16,17 @@
  *      documentation and/or other materials provided with the distribution.
  *
  *      * Neither the name of the copyright holder nor the names of its
- *      contributors may be used to endorse or promote products derived from 
+ *      contributors may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY
  * THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER 
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  * OR
  * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
  * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
@@ -36,22 +36,21 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'package:dart_hooks/dart_hooks.dart';
-import 'package:dart_hooks/src/script_config.dart';
-import 'package:dart_hooks/src/utils/exceptions.dart';
+import 'package:hooks/hooks.dart';
+import 'package:hooks/src/utils/exceptions.dart';
 import 'package:io/ansi.dart';
-import 'package:meta/meta.dart';
+import 'package:io/io.dart';
 
 import 'package:args/args.dart';
 import 'package:path/path.dart' as path;
 
-const String _projectTypeParameter = 'project-type';
+const String _projectTypeArgument = 'project-type';
 
-/// Script parameter used for [_projectTypeParameter] parameter to specify
+/// Script parameter used for [_projectTypeArgument] parameter to specify
 /// that the script is run on a dart project.
 const String dartProjectType = 'dart';
 
-/// Script parameter used for [_projectTypeParameter] parameter to specify
+/// Script parameter used for [_projectTypeArgument] parameter to specify
 /// that the script is run on a flutter project.
 const String flutterProjectType = 'flutter';
 
@@ -62,12 +61,20 @@ const List<String> supportedProjectType = <String>[
 ];
 
 /// Script parameter used to print help.
-const String helpParameter = 'help';
+const String helpArgument = 'help';
+
+const String _codeStyleCheckEnabled = 'codeStyleCheckEnabled';
+
+const String _unitTestsEnabled = 'unitTestsEnabled';
+
+const String _integrationTestsEnabled = 'integrationTestsEnabled';
+
+const String _uiTestsEnabled = 'uiTestsEnabled';
 
 /// Script argument parser.
 final ArgParser argumentParser = ArgParser()
   ..addOption(
-    _projectTypeParameter,
+    _projectTypeArgument,
     defaultsTo: dartProjectType,
     allowed: supportedProjectType,
     allowedHelp: <String, String>{
@@ -77,7 +84,27 @@ final ArgParser argumentParser = ArgParser()
     help: 'Specify the type of project the script is run on',
   )
   ..addFlag(
-    helpParameter,
+    _codeStyleCheckEnabled,
+    defaultsTo: true,
+    help: 'Enable code style check on pre-commit',
+  )
+  ..addFlag(
+    _unitTestsEnabled,
+    defaultsTo: true,
+    help: 'Enable unit tests on pre-commit',
+  )
+  ..addFlag(
+    _integrationTestsEnabled,
+    hide: true,
+    help: 'Enable integration tests on pre-commit',
+  )
+  ..addFlag(
+    _uiTestsEnabled,
+    hide: true,
+    help: 'Enable UI tests on pre-commit',
+  )
+  ..addFlag(
+    helpArgument,
     help: 'Print help message',
   );
 
@@ -91,75 +118,27 @@ void printHelpMessage([final String message]) {
       LineSplitter.split(argumentParser.usage).map((String l) => l).join('\n');
 
   stdout.writeln(
-    'Usage: dart_hooks --$_projectTypeParameter '
+    'Usage: dart_hooks --$_projectTypeArgument '
     '[${supportedProjectType.join(', ')}] <local project directory>'
     '\nOptions:\n$options',
   );
 }
 
-/// Script arguments.
+/// Script arguments parser.
 ///
-/// Contains all the argument supported by the script.
-class ScriptArgument {
-  /// Project directory where the style checker will be executed.
-  final Directory projectDir;
-
-  /// Type of project the script is running against.
-  final String projectType;
-
-  /// Current operating system.
-  final OperatingSystem operatingSystem;
-
-  /// Git Hooks Directory.
-  final Directory hooksDir;
-
-  /// Create [ScriptArgument] with [projectType] and [projectDir].
-  const ScriptArgument({
-    @required this.projectType,
-    @required this.projectDir,
-    @required this.operatingSystem,
-    @required this.hooksDir,
-  })  : assert(projectDir != null, 'Project Dir should be specified'),
-        assert(projectType != null, 'Project Type should be specified'),
-        assert(operatingSystem != null, 'Operating system should be specified'),
-        assert(hooksDir != null, 'Git hooks dir should be specified');
-
-  /// Create a [ScriptArgument] from the provided [argResults].
-  factory ScriptArgument.from(final ArgResults argResults) {
-    final String projectType = _parseProjectType(argResults);
-
-    final Directory projectDir = _parseProjectDirParameter(argResults);
-
-    final OperatingSystem currentOs = getCurrentOs();
-
-    final Directory gitHooksDir = _parseGitHooksDirParameter(projectDir);
-
-    return ScriptArgument(
-      projectType: projectType,
-      projectDir: projectDir,
-      operatingSystem: currentOs,
-      hooksDir: gitHooksDir,
-    );
-  }
-
-  /// Convert the [ScriptArgument] to the [ScriptConfig].
-  ScriptConfig toScriptConfig() {
-    return ScriptConfig(
-      projectType: projectType,
-      projectDir: projectDir,
-      hooksDir: hooksDir,
-    );
-  }
-
-  static String _parseProjectType(final ArgResults argResults) {
-    if (!argResults.wasParsed(_projectTypeParameter)) {
+/// Contains helper method, that parse each script argument.
+extension ArgResultsExtenstion on ArgResults {
+  /// Parse the project type.
+  String parseProjectTypeArgument() {
+    // fail if the project type was not provided
+    if (!wasParsed(_projectTypeArgument)) {
       throw const UnrecoverableException(
-        '$_projectTypeParameter parameter is required',
+        '$_projectTypeArgument parameter is required',
         exitMissingRequiredArgument,
       );
     }
 
-    final dynamic projectType = argResults[_projectTypeParameter];
+    final dynamic projectType = this[_projectTypeArgument];
 
     if (projectType is String &&
         projectType.isNotEmpty &&
@@ -167,22 +146,23 @@ class ScriptArgument {
       return projectType;
     } else {
       throw UnrecoverableException(
-        '$_projectTypeParameter parameter is required, '
+        '$_projectTypeArgument parameter is required, '
         "supported values are ${supportedProjectType.join(", ")}",
         exitMissingRequiredArgument,
       );
     }
   }
 
-  static Directory _parseProjectDirParameter(final ArgResults argResults) {
-    if (argResults.rest.length != 1) {
+  /// Parse the project directory argument.
+  Directory parseProjectDirArgument() {
+    if (rest.length != 1) {
       throw const UnrecoverableException(
         'invalid project dir path',
         exitInvalidArgument,
       );
     }
 
-    final Directory projectDir = getResolvedProjectDir(argResults.rest[0]);
+    final Directory projectDir = getResolvedProjectDir(rest[0]);
 
     if (!projectDir.existsSync()) {
       throw const UnrecoverableException(
@@ -194,7 +174,8 @@ class ScriptArgument {
     return projectDir;
   }
 
-  static Directory _parseGitHooksDirParameter(final Directory projectDir) {
+  /// Parse the git hooks directory argument
+  Directory getGitHooksDir(final Directory projectDir) {
     final Directory hooksDir = Directory('${projectDir.path}/.git_hooks_tools');
 
     try {
@@ -210,6 +191,62 @@ class ScriptArgument {
     }
 
     return hooksDir;
+  }
+
+  /// Parse code style check argument
+  bool parseCodeStyleCheckArgument() {
+    final dynamic codeStyleCheckEnabled = this[_codeStyleCheckEnabled];
+
+    if (codeStyleCheckEnabled is bool) {
+      return codeStyleCheckEnabled;
+    } else {
+      throw UnrecoverableException(
+        '$_codeStyleCheckEnabled parameter not provided',
+        ExitCode.usage.code,
+      );
+    }
+  }
+
+  /// Parse unit tests enabled argument
+  bool parseUnitTestsEnabledArgument() {
+    final dynamic unitTestsEnabled = this[_unitTestsEnabled];
+
+    if (unitTestsEnabled is bool) {
+      return unitTestsEnabled;
+    } else {
+      throw UnrecoverableException(
+        '$_unitTestsEnabled parameter not provided',
+        ExitCode.usage.code,
+      );
+    }
+  }
+
+  /// Parse integration tests enabled argument
+  bool parseIntegrationTestsEnabledArgument() {
+    final dynamic integrationTestsEnabled = this[_integrationTestsEnabled];
+
+    if (integrationTestsEnabled is bool) {
+      return integrationTestsEnabled;
+    } else {
+      throw UnrecoverableException(
+        '$_integrationTestsEnabled parameter not provided',
+        ExitCode.usage.code,
+      );
+    }
+  }
+
+  /// Parse UI tests enabled argument
+  bool parseUiTestsEnabledArgument() {
+    final dynamic uiTestsEnabled = this[_uiTestsEnabled];
+
+    if (uiTestsEnabled is bool) {
+      return uiTestsEnabled;
+    } else {
+      throw UnrecoverableException(
+        '$_uiTestsEnabled parameter not provided',
+        ExitCode.usage.code,
+      );
+    }
   }
 }
 

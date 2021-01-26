@@ -16,17 +16,17 @@
  *      documentation and/or other materials provided with the distribution.
  *
  *      * Neither the name of the copyright holder nor the names of its
- *      contributors may be used to endorse or promote products derived from 
+ *      contributors may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
  * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY
  * THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
  * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER 
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  * OR
  * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
  * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
@@ -36,11 +36,12 @@
 
 library dart_hooks;
 
-export 'package:dart_hooks/src/operating_system.dart';
-export 'package:dart_hooks/src/utils/script_utils.dart';
-export 'package:dart_hooks/src/software_downloader.dart';
-export 'package:dart_hooks/src/software_downloader/dart_software_downloader.dart';
-export 'package:dart_hooks/src/utils/exceptions.dart';
-export 'package:dart_hooks/src/hooks_handlers/git_hooks_handler.dart';
-export 'package:dart_hooks/src/hooks_handler.dart';
-export 'package:dart_hooks/src/hooks_handlers/dart_hooks_handler.dart';
+export 'package:hooks/src/operating_system.dart';
+export 'package:hooks/src/utils/script_utils.dart';
+export 'package:hooks/src/software_downloader.dart';
+export 'package:hooks/src/software_downloader/dart_software_downloader.dart';
+export 'package:hooks/src/utils/exceptions.dart';
+export 'package:hooks/src/hooks_handlers/git_hooks_handler.dart';
+export 'package:hooks/src/hooks_handler.dart';
+export 'package:hooks/src/hooks_handlers/dart_hooks_handler.dart';
+export 'package:hooks/src/script_argument.dart';

@@ -1,4 +1,4 @@
-name: dart_hooks
+name: hooks
 description: A sample command-line application.
 version: 0.1.0
 homepage: https://github.com/bitsydarel/dart_github_hooks
@@ -18,3 +18,6 @@ dependencies:
 dev_dependencies:
   flutter_code_style: ^2.0.1
   test: ^1.15.7
+
+executables:
+  hooks:
