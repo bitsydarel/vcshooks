@@ -76,7 +76,11 @@ Future<void> main(List<String> arguments) async {
 
       final HooksHandler handler = _getHookHandler(os, config);
 
+      stdout.writeln(yellow.wrap('pre-commit checks in progress...'));
+
       await handler.executePreCommitChecks();
+
+      stdout.writeln(green.wrap('pre-commit checks passed.'));
     },
     (Object error, StackTrace trace) {
       if (error is UnrecoverableException) {
