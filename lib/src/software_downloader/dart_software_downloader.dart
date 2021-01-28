@@ -37,11 +37,11 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:hooks/src/software_downloader/git_software_downloader.dart';
-import 'package:hooks/src/utils/exceptions.dart';
+import 'package:vcshooks/src/software_downloader/git_software_downloader.dart';
+import 'package:vcshooks/src/utils/exceptions.dart';
 import 'package:http/http.dart' as http;
-import 'package:hooks/src/operating_system.dart';
-import 'package:hooks/src/utils/dart_utils.dart';
+import 'package:vcshooks/src/operating_system.dart';
+import 'package:vcshooks/src/utils/dart_utils.dart';
 
 /// Dart software downloader
 ///

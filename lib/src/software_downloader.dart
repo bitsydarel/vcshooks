@@ -36,7 +36,7 @@
 
 import 'dart:io';
 
-import 'package:hooks/src/operating_system.dart';
+import 'package:vcshooks/src/operating_system.dart';
 
 /// Script software downloader.
 ///

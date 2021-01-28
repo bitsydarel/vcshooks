@@ -37,8 +37,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:hooks/src/config_cache.dart';
-import 'package:hooks/src/script_config.dart';
+import 'package:vcshooks/src/config_cache.dart';
+import 'package:vcshooks/src/script_config.dart';
 import 'package:meta/meta.dart';
 
 /// [ConfigCache] that save [ScriptConfig] to a file.

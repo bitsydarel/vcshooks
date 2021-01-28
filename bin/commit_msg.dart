@@ -37,8 +37,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:hooks/hooks.dart';
-import 'package:hooks/src/script_config.dart';
+import 'package:vcshooks/vcshooks.dart';
 import 'package:io/ansi.dart';
 import 'package:io/io.dart';
 
@@ -62,7 +61,7 @@ Future<void> main(final List<String> arguments) async {
 
       final ScriptConfig config = await loadScriptConfig(os, Directory.current);
 
-      final HooksHandler handler = config.hookHandler(os);
+      final VCSHooksHandler handler = config.hookHandler(os);
 
       stdout.writeln(yellow.wrap('commit message check in progress...'));
 

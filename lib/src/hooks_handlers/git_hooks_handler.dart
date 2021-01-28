@@ -38,16 +38,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:hooks/src/hooks_handler.dart';
-import 'package:hooks/src/operating_system.dart';
-import 'package:hooks/src/script_config.dart';
-import 'package:hooks/src/utils/exceptions.dart';
+import 'package:vcshooks/src/vcs_hooks_handler.dart';
+import 'package:vcshooks/src/operating_system.dart';
+import 'package:vcshooks/src/script_config.dart';
+import 'package:vcshooks/src/utils/exceptions.dart';
 import 'package:io/io.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 /// Git hooks handler that take care of handling related git hooks actions.
-abstract class GitHooksHandler extends HooksHandler {
+abstract class GitHooksHandler extends VCSHooksHandler {
   /// Default commit message rule.
   ///
   /// 1. Commit should start with:

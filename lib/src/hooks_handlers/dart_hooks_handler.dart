@@ -37,10 +37,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:hooks/hooks.dart';
-import 'package:hooks/src/hooks_handlers/git_hooks_handler.dart';
-import 'package:hooks/src/script_config.dart';
-import 'package:hooks/src/utils/dart_utils.dart';
+import 'package:vcshooks/src/hooks_handlers/git_hooks_handler.dart';
+import 'package:vcshooks/src/script_config.dart';
+import 'package:vcshooks/src/utils/dart_utils.dart';
+import 'package:vcshooks/src/operating_system.dart';
+import 'package:vcshooks/src/utils/exceptions.dart';
 import 'package:io/io.dart';
 import 'package:meta/meta.dart';
 

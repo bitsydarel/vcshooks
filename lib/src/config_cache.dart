@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import 'package:hooks/src/script_config.dart';
+import 'package:vcshooks/src/script_config.dart';
 
 /// Script Configuration cache.
 abstract class ConfigCache {

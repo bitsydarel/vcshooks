@@ -38,7 +38,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:hooks/hooks.dart';
+import 'package:vcshooks/vcshooks.dart';
 
 Future<void> main(List<String> arguments) async {
   ArgResults argResults;
@@ -70,7 +70,7 @@ Future<void> main(List<String> arguments) async {
 
       await downloader.downloadPreCommitTools();
 
-      final HooksHandler initializer = scriptConfig.hookHandler(
+      final VCSHooksHandler initializer = scriptConfig.hookHandler(
         scriptArgument.operatingSystem,
       );
 

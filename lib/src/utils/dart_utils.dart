@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import 'package:hooks/src/operating_system.dart';
+import 'package:vcshooks/src/operating_system.dart';
 
 const String _dbstyleguidecheckerUrl =
     'https://github.com/bitsydarel/dbstyleguidechecker/releases/download/v2.0.5';

@@ -34,13 +34,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-library dart_hooks;
+library vcshooks;
 
-export 'package:hooks/src/operating_system.dart';
-export 'package:hooks/src/utils/script_utils.dart';
-export 'package:hooks/src/software_downloader.dart';
-export 'package:hooks/src/utils/exceptions.dart';
-export 'package:hooks/src/hooks_handler.dart';
-export 'package:hooks/src/script_argument.dart';
-export 'package:hooks/src/script_config.dart';
-export 'package:hooks/src/config_cache.dart';
+export 'package:vcshooks/src/operating_system.dart';
+export 'package:vcshooks/src/utils/script_utils.dart';
+export 'package:vcshooks/src/software_downloader.dart';
+export 'package:vcshooks/src/utils/exceptions.dart';
+export 'package:vcshooks/src/vcs_hooks_handler.dart';
+export 'package:vcshooks/src/script_argument.dart';
+export 'package:vcshooks/src/script_config.dart';
+export 'package:vcshooks/src/config_cache.dart';
