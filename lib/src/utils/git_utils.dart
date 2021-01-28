@@ -37,7 +37,7 @@
 import 'package:hooks/src/operating_system.dart';
 
 const String _hooksToolUrl =
-    'https://github.com/bitsydarel/hooks/releases/download/v0.1.dev';
+    'https://github.com/bitsydarel/hooks/releases/download/v0.1';
 
 /// Flutter
 extension FlutterSupportedOperatingSystemExtensions on OperatingSystem {
