@@ -39,9 +39,6 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:hooks/hooks.dart';
-import 'package:hooks/src/config_cache.dart';
-import 'package:hooks/src/config_caches/file_config_cache.dart';
-import 'package:hooks/src/script_config.dart';
 
 Future<void> main(List<String> arguments) async {
   ArgResults argResults;
@@ -63,29 +60,23 @@ Future<void> main(List<String> arguments) async {
   runZonedGuarded<void>(
     () async {
       final ScriptArgument scriptArgument = ScriptArgument.from(argResults);
+      final ScriptConfig scriptConfig = scriptArgument.toScriptConfig();
 
       Directory.current = scriptArgument.projectDir.path;
 
-      final SoftwareDownloader softwareDownloader = _getSoftwareDownloader(
+      final SoftwareDownloader downloader = scriptConfig.softwareDownloader(
         scriptArgument.operatingSystem,
-        scriptArgument.hooksDir,
-        scriptArgument,
       );
 
-      await softwareDownloader.downloadPreCommitTools();
+      await downloader.downloadPreCommitTools();
 
-      final ScriptConfig scriptConfig = scriptArgument.toScriptConfig();
-
-      final HooksHandler initializer = DartHooksHandler(
-        os: scriptArgument.operatingSystem,
-        config: scriptConfig,
+      final HooksHandler initializer = scriptConfig.hookHandler(
+        scriptArgument.operatingSystem,
       );
 
       await initializer.setup();
 
-      final ConfigCache configCache = FileConfigCache(
-        hooksDir: scriptConfig.hooksDir,
-      );
+      final ConfigCache configCache = scriptConfig.cache();
 
       await configCache.saveScriptConfig(scriptConfig);
     },
@@ -101,22 +92,4 @@ Future<void> main(List<String> arguments) async {
       }
     },
   );
-}
-
-SoftwareDownloader _getSoftwareDownloader(
-  final OperatingSystem currentOs,
-  final Directory toolsDir,
-  final ScriptArgument scriptArgument,
-) {
-  switch (scriptArgument.projectType) {
-    case dartProjectType:
-    case flutterProjectType:
-      return DartSoftwareDownloader(toolsDir, currentOs);
-    default:
-      throw UnrecoverableException(
-        'Unsupported project type, '
-        'supported project type: ${supportedProjectType.join(', ')}',
-        exitMissingRequiredArgument,
-      );
-  }
 }

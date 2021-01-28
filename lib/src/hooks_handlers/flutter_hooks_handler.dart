@@ -37,11 +37,20 @@
 import 'dart:io';
 
 import 'package:hooks/src/hooks_handlers/dart_hooks_handler.dart';
+import 'package:hooks/src/operating_system.dart';
+import 'package:hooks/src/script_config.dart';
 import 'package:hooks/src/utils/exceptions.dart';
 import 'package:io/io.dart';
+import 'package:meta/meta.dart';
 
 /// Flutter hooks handler take care of executing hooks on a flutter project.
 class FlutterHooksHandler extends DartHooksHandler {
+  ///
+  FlutterHooksHandler({
+    @required OperatingSystem os,
+    @required ScriptConfig config,
+  }) : super(os: os, config: config);
+
   @override
   Future<String> executeUnitTests() async {
     final Directory testDir = Directory('${config.projectDir.path}/test');

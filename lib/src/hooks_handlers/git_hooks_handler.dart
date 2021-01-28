@@ -48,6 +48,24 @@ import 'package:path/path.dart' as path;
 
 /// Git hooks handler that take care of handling related git hooks actions.
 abstract class GitHooksHandler extends HooksHandler {
+  /// Default commit message rule.
+  ///
+  /// 1. Commit should start with:
+  /// With a word or digits.
+  static const String defaultCommitMessageRule = r'^(?=[\w]).*';
+
+  /// Default branch name rule.
+  ///
+  /// 1. Branch should start with:
+  /// feature/, release/ or hotfix/
+  ///
+  /// 2. prefix should be followed by lowercase words or number.
+  ///
+  /// 3. Optionally if there
+  ///
+  static const String defaultBranchNameRule =
+      r'(^(?=[feature\/|release\/|hotfix\/][a-z\d]+[-\/_\.]*[a-z\d]*)(?!.*[\@ ]).*)|^(?=(develop|master|main)$).*';
+
   /// Create a [GitHooksHandler] with the provided [os], [config].
   GitHooksHandler({
     @required OperatingSystem os,
@@ -82,21 +100,51 @@ abstract class GitHooksHandler extends HooksHandler {
     }
   }
 
-  void _addHooksDirToGitIgnoreFile() {
-    final File gitIgnore = File('${config.projectDir.path}/.gitignore');
+  @override
+  Future<void> checkCommitMessage(String commitMessage) async {
+    final RegExp rule = RegExp(config.commitMessageRule);
 
-    final String gitIgnoreContent = gitIgnore.readAsStringSync();
+    if (rule.stringMatch(commitMessage) != commitMessage) {
+      throw UnrecoverableException(
+        'Commit message "$commitMessage" does not match '
+        'rule: ${config.commitMessageRule}',
+        ExitCode.software.code,
+      );
+    }
+  }
 
-    final String hooksDirPath = path.relative(
-      config.hooksDir.path,
-      from: config.projectDir.path,
+  @override
+  Future<String> executeBranchNamingCheck() async {
+    final RegExp rule = RegExp(config.preCommitConfig.branchNamingRule);
+
+    final ProcessResult processResult = Process.runSync(
+      'git',
+      <String>['branch', '--show-current'],
+      runInShell: true,
+      stdoutEncoding: utf8,
+      stderrEncoding: utf8,
     );
 
-    if (!gitIgnoreContent.contains(hooksDirPath)) {
-      gitIgnore.writeAsStringSync(
-        hooksDirPath,
-        mode: FileMode.writeOnlyAppend,
-        flush: true,
+    if (processResult.exitCode == ExitCode.success.code) {
+      final String branchName =
+          '${processResult.stdout.toString()}${processResult.stderr.toString()}'
+              .trim();
+
+      if (rule.stringMatch(branchName) != branchName) {
+        throw UnrecoverableException(
+          'Branch name does not conform to the branch naming rule\n'
+          'Branch name: $branchName\n'
+          'Rule: ${config.preCommitConfig.branchNamingRule}',
+          ExitCode.software.code,
+        );
+      }
+
+      return '';
+    } else {
+      throw UnrecoverableException(
+        'Could not get current git branch\n'
+        'Error: ${processResult.stderr.toString()}',
+        processResult.exitCode,
       );
     }
   }
@@ -138,6 +186,25 @@ abstract class GitHooksHandler extends HooksHandler {
         'Could not set git hooks directory to ${newHooksDir.path}\n'
         'Error: ${processResult.stderr.toString()}',
         processResult.exitCode,
+      );
+    }
+  }
+
+  void _addHooksDirToGitIgnoreFile() {
+    final File gitIgnore = File('${config.projectDir.path}/.gitignore');
+
+    final String gitIgnoreContent = gitIgnore.readAsStringSync();
+
+    final String hooksDirPath = path.relative(
+      config.hooksDir.path,
+      from: config.projectDir.path,
+    );
+
+    if (!gitIgnoreContent.contains(hooksDirPath)) {
+      gitIgnore.writeAsStringSync(
+        '\n$hooksDirPath',
+        mode: FileMode.writeOnlyAppend,
+        flush: true,
       );
     }
   }

@@ -36,7 +36,11 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'package:hooks/hooks.dart';
+import 'package:hooks/src/config_cache.dart';
+import 'package:hooks/src/config_caches/file_config_cache.dart';
+import 'package:hooks/src/hooks_handlers/git_hooks_handler.dart';
+import 'package:hooks/src/operating_system.dart';
+import 'package:hooks/src/script_config.dart';
 import 'package:hooks/src/utils/exceptions.dart';
 import 'package:io/ansi.dart';
 import 'package:io/io.dart';
@@ -63,13 +67,17 @@ const List<String> supportedProjectType = <String>[
 /// Script parameter used to print help.
 const String helpArgument = 'help';
 
-const String _codeStyleCheckEnabled = 'codeStyleCheckEnabled';
+const String _commitMessageRuleArgument = 'commit-message-rule';
 
-const String _unitTestsEnabled = 'unitTestsEnabled';
+const String _branchNamingRuleArgument = 'branch-naming-rule';
 
-const String _integrationTestsEnabled = 'integrationTestsEnabled';
+const String _codeStyleCheckEnabledArgument = 'code-style-check-enabled';
 
-const String _uiTestsEnabled = 'uiTestsEnabled';
+const String _unitTestsEnabledArgument = 'unit-tests-Enabled';
+
+const String _integrationTestsEnabledArgument = 'integration-tests-enabled';
+
+const String _uiTestsEnabledArgument = 'ui-tests-enabled';
 
 /// Script argument parser.
 final ArgParser argumentParser = ArgParser()
@@ -83,23 +91,33 @@ final ArgParser argumentParser = ArgParser()
     },
     help: 'Specify the type of project the script is run on',
   )
+  ..addOption(
+    _commitMessageRuleArgument,
+    help: 'Specify the commit message rule',
+    defaultsTo: GitHooksHandler.defaultCommitMessageRule,
+  )
+  ..addOption(
+    _branchNamingRuleArgument,
+    help: 'Specify the branch naming rule',
+    defaultsTo: GitHooksHandler.defaultBranchNameRule,
+  )
   ..addFlag(
-    _codeStyleCheckEnabled,
+    _codeStyleCheckEnabledArgument,
     defaultsTo: true,
     help: 'Enable code style check on pre-commit',
   )
   ..addFlag(
-    _unitTestsEnabled,
+    _unitTestsEnabledArgument,
     defaultsTo: true,
     help: 'Enable unit tests on pre-commit',
   )
   ..addFlag(
-    _integrationTestsEnabled,
+    _integrationTestsEnabledArgument,
     hide: true,
     help: 'Enable integration tests on pre-commit',
   )
   ..addFlag(
-    _uiTestsEnabled,
+    _uiTestsEnabledArgument,
     hide: true,
     help: 'Enable UI tests on pre-commit',
   )
@@ -122,6 +140,38 @@ void printHelpMessage([final String message]) {
     '[${supportedProjectType.join(', ')}] <local project directory>'
     '\nOptions:\n$options',
   );
+}
+
+/// Load the current project script config and validate that its content.
+Future<ScriptConfig> loadScriptConfig(
+  final OperatingSystem currentOS,
+  final Directory currentDir,
+) async {
+  final Directory hooksDir = await GitHooksHandler.getCurrentHooksDir();
+
+  if (!hooksDir.existsSync()) {
+    throw UnrecoverableException(
+      'Git Hooks directory ${hooksDir.path} not found\n'
+      'Please run setup tool',
+      ExitCode.config.code,
+    );
+  }
+
+  final ConfigCache configCache = FileConfigCache(hooksDir: hooksDir);
+
+  final ScriptConfig scriptConfig = await configCache.loadScriptConfig();
+
+  if (scriptConfig == null) {
+    throw UnrecoverableException(
+      'Script config not found in dir ${hooksDir.path}\n'
+      'Please run setup tool',
+      ExitCode.config.code,
+    );
+  }
+
+  scriptConfig.validateConfig(currentOS, currentDir.path, hooksDir.path);
+
+  return scriptConfig;
 }
 
 /// Script arguments parser.
@@ -176,7 +226,9 @@ extension ArgResultsExtenstion on ArgResults {
 
   /// Parse the git hooks directory argument
   Directory getGitHooksDir(final Directory projectDir) {
-    final Directory hooksDir = Directory('${projectDir.path}/.git_hooks_tools');
+    final Directory hooksDir = Directory(
+      '${projectDir.path}/${ScriptConfig.hooksDirName}',
+    );
 
     try {
       if (!hooksDir.existsSync()) {
@@ -193,15 +245,43 @@ extension ArgResultsExtenstion on ArgResults {
     return hooksDir;
   }
 
+  /// Parse commit message rule argument
+  String parseCommitMessageRuleArgument() {
+    final dynamic commitMessageRule = this[_commitMessageRuleArgument];
+
+    if (commitMessageRule is String && commitMessageRule.isNotEmpty) {
+      return commitMessageRule;
+    } else {
+      throw UnrecoverableException(
+        '$_commitMessageRuleArgument argument not provided',
+        ExitCode.usage.code,
+      );
+    }
+  }
+
+  /// Parse branch naming rule argument
+  String parseBranchNamingRuleArgument() {
+    final dynamic branchNamingRule = this[_branchNamingRuleArgument];
+
+    if (branchNamingRule is String && branchNamingRule.isNotEmpty) {
+      return branchNamingRule;
+    } else {
+      throw UnrecoverableException(
+        '$_branchNamingRuleArgument argument not provided',
+        ExitCode.usage.code,
+      );
+    }
+  }
+
   /// Parse code style check argument
   bool parseCodeStyleCheckArgument() {
-    final dynamic codeStyleCheckEnabled = this[_codeStyleCheckEnabled];
+    final dynamic codeStyleCheckEnabled = this[_codeStyleCheckEnabledArgument];
 
     if (codeStyleCheckEnabled is bool) {
       return codeStyleCheckEnabled;
     } else {
       throw UnrecoverableException(
-        '$_codeStyleCheckEnabled parameter not provided',
+        '$_codeStyleCheckEnabledArgument argument not provided',
         ExitCode.usage.code,
       );
     }
@@ -209,13 +289,13 @@ extension ArgResultsExtenstion on ArgResults {
 
   /// Parse unit tests enabled argument
   bool parseUnitTestsEnabledArgument() {
-    final dynamic unitTestsEnabled = this[_unitTestsEnabled];
+    final dynamic unitTestsEnabled = this[_unitTestsEnabledArgument];
 
     if (unitTestsEnabled is bool) {
       return unitTestsEnabled;
     } else {
       throw UnrecoverableException(
-        '$_unitTestsEnabled parameter not provided',
+        '$_unitTestsEnabledArgument argument not provided',
         ExitCode.usage.code,
       );
     }
@@ -223,13 +303,13 @@ extension ArgResultsExtenstion on ArgResults {
 
   /// Parse integration tests enabled argument
   bool parseIntegrationTestsEnabledArgument() {
-    final dynamic integrationTestsEnabled = this[_integrationTestsEnabled];
+    final dynamic integrationTests = this[_integrationTestsEnabledArgument];
 
-    if (integrationTestsEnabled is bool) {
-      return integrationTestsEnabled;
+    if (integrationTests is bool) {
+      return integrationTests;
     } else {
       throw UnrecoverableException(
-        '$_integrationTestsEnabled parameter not provided',
+        '$_integrationTestsEnabledArgument argument not provided',
         ExitCode.usage.code,
       );
     }
@@ -237,13 +317,13 @@ extension ArgResultsExtenstion on ArgResults {
 
   /// Parse UI tests enabled argument
   bool parseUiTestsEnabledArgument() {
-    final dynamic uiTestsEnabled = this[_uiTestsEnabled];
+    final dynamic uiTestsEnabled = this[_uiTestsEnabledArgument];
 
     if (uiTestsEnabled is bool) {
       return uiTestsEnabled;
     } else {
       throw UnrecoverableException(
-        '$_uiTestsEnabled parameter not provided',
+        '$_uiTestsEnabledArgument argument not provided',
         ExitCode.usage.code,
       );
     }

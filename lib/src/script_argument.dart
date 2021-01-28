@@ -58,6 +58,12 @@ class ScriptArgument {
   /// Git Hooks Directory.
   final Directory hooksDir;
 
+  /// Commit message rule as regex.
+  final String commitMessageRule;
+
+  /// Branch naming rule as regex.
+  final String branchNamingRule;
+
   /// Code style check is enabled.
   final bool codeStyleCheckEnabled;
 
@@ -76,6 +82,8 @@ class ScriptArgument {
     @required this.projectDir,
     @required this.operatingSystem,
     @required this.hooksDir,
+    @required this.commitMessageRule,
+    @required this.branchNamingRule,
     @required this.codeStyleCheckEnabled,
     @required this.unitTestsEnabled,
     @required this.integrationTestsEnabled,
@@ -84,6 +92,14 @@ class ScriptArgument {
         assert(projectType != null, 'Project Type should be specified'),
         assert(operatingSystem != null, 'Operating system should be specified'),
         assert(hooksDir != null, 'Git hooks dir should be specified'),
+        assert(
+          commitMessageRule != null,
+          'Commit message name should be specified',
+        ),
+        assert(
+          branchNamingRule != null,
+          'Branch naming rules should be specified',
+        ),
         assert(
           codeStyleCheckEnabled != null,
           'Code style check enabled should be specified',
@@ -111,6 +127,8 @@ class ScriptArgument {
       projectDir: projectDir,
       operatingSystem: getCurrentOs(),
       hooksDir: gitHooksDir,
+      commitMessageRule: args.parseCommitMessageRuleArgument(),
+      branchNamingRule: args.parseBranchNamingRuleArgument(),
       codeStyleCheckEnabled: args.parseCodeStyleCheckArgument(),
       unitTestsEnabled: args.parseUnitTestsEnabledArgument(),
       integrationTestsEnabled: args.parseIntegrationTestsEnabledArgument(),
@@ -121,10 +139,13 @@ class ScriptArgument {
   /// Convert the [ScriptArgument] to the [ScriptConfig].
   ScriptConfig toScriptConfig() {
     return ScriptConfig(
+      operatingSystem: operatingSystem.name(),
       projectType: projectType,
       projectDir: projectDir,
       hooksDir: hooksDir,
+      commitMessageRule: commitMessageRule,
       preCommitConfig: PreCommitConfig(
+        branchNamingRule: branchNamingRule,
         codeStyleCheckEnabled: codeStyleCheckEnabled,
         unitTestsEnabled: unitTestsEnabled,
         integrationTestsEnabled: integrationTestsEnabled,

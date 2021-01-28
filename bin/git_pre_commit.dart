@@ -38,43 +38,19 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:hooks/hooks.dart';
-import 'package:hooks/src/config_cache.dart';
-import 'package:hooks/src/config_caches/file_config_cache.dart';
-import 'package:hooks/src/script_config.dart';
 import 'package:io/ansi.dart';
-import 'package:io/io.dart';
 
 // Run the script with the provided [arguments].
-Future<void> main(List<String> arguments) async {
+Future<void> main(final List<String> arguments) async {
   stdout.writeln(arguments.join(', '));
 
   runZonedGuarded<void>(
     () async {
       final OperatingSystem os = getCurrentOs();
 
-      final Directory hooksDir = await GitHooksHandler.getCurrentHooksDir();
+      final ScriptConfig config = await loadScriptConfig(os, Directory.current);
 
-      if (!hooksDir.existsSync()) {
-        throw UnrecoverableException(
-          'Git Hooks directory ${hooksDir.path} not found\n'
-          'Please run setup tool',
-          ExitCode.config.code,
-        );
-      }
-
-      final ScriptConfig config = await _getConfig(hooksDir);
-
-      if (config == null) {
-        throw UnrecoverableException(
-          'Script config not found in dir ${hooksDir.path}\n'
-          'Please run setup tool',
-          ExitCode.config.code,
-        );
-      }
-
-      config.validateConfig(Directory.current.path, hooksDir.path);
-
-      final HooksHandler handler = _getHookHandler(os, config);
+      final HooksHandler handler = config.hookHandler(os);
 
       stdout.writeln(yellow.wrap('pre-commit checks in progress...'));
 
@@ -92,25 +68,4 @@ Future<void> main(List<String> arguments) async {
       }
     },
   );
-}
-
-Future<ScriptConfig> _getConfig(final Directory hooksDir) async {
-  final ConfigCache configCache = FileConfigCache(hooksDir: hooksDir);
-
-  return configCache.loadScriptConfig();
-}
-
-HooksHandler _getHookHandler(
-  final OperatingSystem operatingSystem,
-  final ScriptConfig config,
-) {
-  switch (config.projectType) {
-    case dartProjectType:
-      return DartHooksHandler(os: operatingSystem, config: config);
-    default:
-      throw UnrecoverableException(
-        'Project type not supported\nPlease run setup tool',
-        ExitCode.config.code,
-      );
-  }
 }

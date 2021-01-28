@@ -58,9 +58,21 @@ abstract class HooksHandler {
   /// Setup the hook handler.
   Future<void> setup();
 
+  /// Check the commit message if it's match the rule.
+  Future<void> checkCommitMessage(String commitMessage);
+
   /// Execute before commit checks.
   @mustCallSuper
   Future<void> executePreCommitChecks() async {
+    final String branchNamingViolation = await executeBranchNamingCheck();
+
+    if (branchNamingViolation?.isNotEmpty == true) {
+      throw UnrecoverableException(
+        branchNamingViolation,
+        ExitCode.software.code,
+      );
+    }
+
     if (config.preCommitConfig.codeStyleCheckEnabled) {
       final String codeStyleViolations = await executeCodeStyleCheck();
 
@@ -96,6 +108,11 @@ abstract class HooksHandler {
       }
     }
   }
+
+  /// Execute branch naming check.
+  ///
+  /// Return not empty [String] describing a failure if the check failed.
+  Future<String> executeBranchNamingCheck();
 
   /// Execute code style check.
   ///

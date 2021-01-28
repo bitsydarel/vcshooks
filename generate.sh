@@ -34,4 +34,5 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-dart2native bin/git_pre_commit.dart -o .git_hooks_tools/pre-commit && chmod +x .git_hooks_tools/pre-commit
+dart2native bin/git_pre_commit.dart -o .hooks_tools/pre-commit && chmod +x .hooks_tools/pre-commit
+dart2native bin/git_commit_msg.dart -o .hooks_tools/commit-msg && chmod +x .hooks_tools/commit-msg
