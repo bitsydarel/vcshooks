@@ -34,24 +34,62 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import 'dart:io';
-
 import 'package:hooks/src/operating_system.dart';
 
-/// Script software downloader.
-///
-/// Download the required software to execute the required.
-abstract class SoftwareDownloader {
-  /// The hooks directory where the software will be kept.
-  final Directory hooksDir;
+const String _hooksToolUrl =
+    'https://github.com/bitsydarel/hooks/releases/download/v0.1.dev';
 
-  /// The current operating system on which the software downloader is run.
-  final OperatingSystem currentOs;
+/// Flutter
+extension FlutterSupportedOperatingSystemExtensions on OperatingSystem {
+  /// Get the code style check tool download link.
+  String getPreCommitDownloadLink() {
+    switch (this) {
+      case OperatingSystem.windows:
+        return '$_hooksToolUrl/precommit-windows.exe';
+      case OperatingSystem.macOs:
+        return '$_hooksToolUrl/precommit-macos';
+      case OperatingSystem.linux:
+        return '$_hooksToolUrl/precommit-linux';
+    }
 
-  /// Const constructor to create a [SoftwareDownloader] with the [hooksDir] and
-  /// [currentOs].
-  const SoftwareDownloader(this.currentOs, this.hooksDir);
+    throw const UnsupportedOsException();
+  }
 
-  /// Download the pre-commit tools.
-  Future<void> downloadPreCommitTools();
+  /// Get the code style check file name.
+  String getPreCommitFileName() {
+    switch (this) {
+      case OperatingSystem.windows:
+      case OperatingSystem.macOs:
+      case OperatingSystem.linux:
+        return 'pre-commit';
+    }
+
+    throw const UnsupportedOsException();
+  }
+
+  /// Get the code style check tool download link.
+  String getCommitMsgDownloadLink() {
+    switch (this) {
+      case OperatingSystem.windows:
+        return '$_hooksToolUrl/commit-msg-windows.exe';
+      case OperatingSystem.macOs:
+        return '$_hooksToolUrl/commit-msg-macos';
+      case OperatingSystem.linux:
+        return '$_hooksToolUrl/commit-msg-linux';
+    }
+
+    throw const UnsupportedOsException();
+  }
+
+  /// Get the code style check file name.
+  String getCommitMsgFileName() {
+    switch (this) {
+      case OperatingSystem.windows:
+      case OperatingSystem.macOs:
+      case OperatingSystem.linux:
+        return 'commit-msg';
+    }
+
+    throw const UnsupportedOsException();
+  }
 }

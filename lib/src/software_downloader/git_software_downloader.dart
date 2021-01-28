@@ -37,43 +37,61 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:hooks/src/software_downloader/git_software_downloader.dart';
-import 'package:hooks/src/utils/exceptions.dart';
-import 'package:http/http.dart' as http;
 import 'package:hooks/src/operating_system.dart';
-import 'package:hooks/src/utils/dart_utils.dart';
+import 'package:hooks/src/software_downloader.dart';
+import 'package:hooks/src/utils/exceptions.dart';
+import 'package:hooks/src/utils/git_utils.dart';
+import 'package:http/http.dart' as http;
 
-/// Dart software downloader
+/// Git software downloader.
 ///
-/// Download software required to execute hooks on a dart project.
-class DartSoftwareDownloader extends GitSoftwareDownloader {
-  /// Create a [DartSoftwareDownloader] with the provided [hooksDir] and [os].
-  const DartSoftwareDownloader(
-    Directory hooksDir,
+/// Download software required to execute hooks on a git project.
+class GitSoftwareDownloader extends SoftwareDownloader {
+  /// Create a [GitSoftwareDownloader] with the provided [hooksDir] and [os].
+  const GitSoftwareDownloader(
     OperatingSystem os,
+    Directory hooksDir,
   ) : super(os, hooksDir);
 
   @override
   Future<void> downloadPreCommitTools() async {
-    await super.downloadPreCommitTools();
+    await _downloadPreCommitChecker();
 
-    await _downloadStaticAnalyzer();
+    await _downloadCommitMsgCheck();
   }
 
-  Future<void> _downloadStaticAnalyzer() async {
-    final String staticAnalyzerFileName = currentOs.getCodeStyleCheckFileName();
-    final String staticAnalyzerLink = currentOs.getCodeStyleCheckDownloadLink();
+  Future<void> _downloadPreCommitChecker() async {
+    final String preCommitLink = currentOs.getPreCommitDownloadLink();
+    final String preCommitFileName = currentOs.getPreCommitFileName();
 
-    final File staticAnalyzer = File(
-      '${hooksDir.path}/$staticAnalyzerFileName',
-    );
+    final File preCommitFile = File('${hooksDir.path}/$preCommitFileName');
 
     try {
-      final Uint8List response = await http.readBytes(staticAnalyzerLink);
+      final Uint8List response = await http.readBytes(preCommitLink);
 
-      staticAnalyzer.writeAsBytes(response, flush: true);
+      preCommitFile.writeAsBytes(response, flush: true);
 
-      stdout.writeln('Downloaded $staticAnalyzerFileName for static analysis');
+      stdout.writeln('Downloaded $preCommitFileName for pre-commit check');
+    } on http.ClientException catch (exception) {
+      throw UnrecoverableException(
+        '${exception.uri} : ${exception.message}',
+        exitUnexpectedError,
+      );
+    }
+  }
+
+  Future<void> _downloadCommitMsgCheck() async {
+    final String commitMsgLink = currentOs.getCommitMsgDownloadLink();
+    final String commitMsgFileName = currentOs.getCommitMsgFileName();
+
+    final File commitMsgFile = File('${hooksDir.path}/$commitMsgFileName');
+
+    try {
+      final Uint8List response = await http.readBytes(commitMsgLink);
+
+      commitMsgFile.writeAsBytes(response, flush: true);
+
+      stdout.writeln('Downloaded $commitMsgFileName for commit message check');
     } on http.ClientException catch (exception) {
       throw UnrecoverableException(
         '${exception.uri} : ${exception.message}',
