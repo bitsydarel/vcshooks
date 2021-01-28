@@ -1,0 +1,225 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # Note that this workflow uses the latest stable version of the Dart SDK.
+    # Docker images for other release channels - like dev and beta - are also
+    # available. See https://hub.docker.com/r/google/dart/ for the available
+    # images.
+    container:
+      image: google/dart:latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Print Dart SDK version
+        run: dart --version
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Run tests
+        run: dart test
+
+  release:
+    needs: [ build ]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get the tag name
+        id: get_tag_name
+        run: echo ::set-output name=TAG_NAME::${GITHUB_REF/refs\/tags\//}
+
+      - name: Create a Release
+        id: create_release
+        uses: actions/create-release@v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_tag_name.outputs.TAG_NAME }}
+          # The name of the release. For example, `Release v1.0.1`
+          release_name: Release ${{ steps.get_tag_name.outputs.TAG_NAME }}
+          # Path to file with information about the tag.
+          body_path: CHANGELOG.md # optional
+
+  release-linux:
+    needs: [ release ]
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: google/dart:latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Print Dart SDK version
+        run: dart --version
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Generate linux pre-commit native binary
+        run: dart2native bin/pre_commit.dart -o bin/precommit-linux
+      
+      - name: Generate linux commit-msg native binary
+        run: dart2native bin/commit_msg.dart -o bin/commit-msg-linux
+
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Linux pre-commit Build Artifact
+        id: upload-pre-commit-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./bin/precommit-linux
+          asset_name: precommit-linux
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Linux commit-msg Build Artifact
+        id: upload-commit-msg-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./bin/commit-msg-linux
+          asset_name: commit-msg-linux
+          asset_content_type: application/octet-stream
+
+  release-macos:
+    needs: [ release ]
+
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install brew dart repo
+        run: brew tap dart-lang/dart
+
+      - name: Install dart with brew
+        run: brew install dart
+
+      - name: Print Dart SDK version
+        run: dart --version
+
+      - name: Install dependencies
+        run: dart pub get
+      
+      - name: Generate MacOs pre-commit native binary
+        run: dart2native bin/pre_commit.dart -o bin/precommit-macos
+      
+      - name: Generate MacOs commit-msg native binary
+        run: dart2native bin/commit_msg.dart -o bin/commit-msg-macos
+
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload MacOs pre-commit Build Artifact
+        id: upload-pre-commit-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./bin/precommit-macos
+          asset_name: precommit-macos
+          asset_content_type: application/octet-stream
+      
+      - name: Upload MacOs commit-msg Build Artifact
+        id: upload-commit-msg-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./bin/commit-msg-macos
+          asset_name: commit-msg-macos
+          asset_content_type: application/octet-stream
+
+  release-windows:
+    needs: [ release ]
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Dart SDK
+        uses: crazy-max/ghaction-chocolatey@v1
+        with:
+          args: install dart-sdk
+
+      - name: Update Environment variable using GITHUB path to include dart binaries
+        run: echo "C:\tools\dart-sdk\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Print Dart SDK version
+        run: dart --version
+
+      - name: Install dependencies
+        run: dart pub get
+      
+      - name: Generate Windows pre-commit native binary
+        run: dart2native bin/pre_commit.dart -o bin/precommit-windows.exe
+      
+      - name: Generate Windows commit-msg native binary
+        run: dart2native bin/commit_msg.dart -o bin/commit-msg-windows.exe
+
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows Build Artifact
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./bin/dbstyleguidechecker-windows.exe
+          asset_name: dbstyleguidechecker-windows.exe
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Windows pre-commit Build Artifact
+        id: upload-pre-commit-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./bin/precommit-windows.exe
+          asset_name: precommit-macos
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Windows commit-msg Build Artifact
+        id: upload-commit-msg-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./bin/commit-msg-windows.exe
+          asset_name: commit-msg-windows.exe
+          asset_content_type: application/octet-stream
