@@ -199,7 +199,7 @@ jobs:
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./bin/precommit-windows.exe
-          asset_name: precommit-macos
+          asset_name: precommit-windows.exe
           asset_content_type: application/octet-stream
       
       - name: Upload Windows commit-msg Build Artifact
