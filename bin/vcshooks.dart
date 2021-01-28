@@ -34,16 +34,62 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import 'package:vcshooks/src/script_config.dart';
+import 'dart:async';
+import 'dart:io';
 
-/// Script Configuration cache.
-abstract class ConfigCache {
-  /// Save the script's configuration.
-  Future<void> saveScriptConfig(final ScriptConfig config);
+import 'package:args/args.dart';
+import 'package:vcshooks/vcshooks.dart';
 
-  /// Load the script's configuration.
-  Future<ScriptConfig> loadScriptConfig();
+Future<void> main(List<String> arguments) async {
+  ArgResults argResults;
 
-  /// Refresh the script's configuration.
-  Future<ScriptConfig> refreshScriptConfig();
+  try {
+    argResults = argumentParser.parse(arguments);
+  } on Exception catch (_) {
+    printHelpMessage('Invalid parameter specified.');
+    exitCode = exitInvalidArgument;
+    return;
+  }
+
+  if (argResults.wasParsed(helpArgument)) {
+    printHelpMessage();
+    exitCode = 0;
+    return;
+  }
+
+  runZonedGuarded<void>(
+    () async {
+      final ScriptArgument scriptArgument = ScriptArgument.from(argResults);
+      final ScriptConfig scriptConfig = scriptArgument.toScriptConfig();
+
+      Directory.current = scriptArgument.projectDir.path;
+
+      final SoftwareDownloader downloader = scriptConfig.softwareDownloader(
+        scriptArgument.operatingSystem,
+      );
+
+      await downloader.downloadPreCommitTools();
+
+      final VCSHooksHandler initializer = scriptConfig.hookHandler(
+        scriptArgument.operatingSystem,
+      );
+
+      await initializer.setup();
+
+      final ConfigCache configCache = scriptConfig.cache();
+
+      await configCache.saveScriptConfig(scriptConfig);
+    },
+    (Object error, StackTrace stack) {
+      if (error is UnrecoverableException) {
+        printHelpMessage(error.reason);
+        exitCode = error.exitCode;
+        return;
+      } else {
+        printHelpMessage(error.toString());
+        exitCode = exitUnexpectedError;
+        return;
+      }
+    },
+  );
 }

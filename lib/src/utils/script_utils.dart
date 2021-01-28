@@ -36,12 +36,12 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'package:hooks/src/config_cache.dart';
-import 'package:hooks/src/config_caches/file_config_cache.dart';
-import 'package:hooks/src/hooks_handlers/git_hooks_handler.dart';
-import 'package:hooks/src/operating_system.dart';
-import 'package:hooks/src/script_config.dart';
-import 'package:hooks/src/utils/exceptions.dart';
+import 'package:vcshooks/src/config_cache.dart';
+import 'package:vcshooks/src/config_caches/file_config_cache.dart';
+import 'package:vcshooks/src/hooks_handlers/git_hooks_handler.dart';
+import 'package:vcshooks/src/operating_system.dart';
+import 'package:vcshooks/src/script_config.dart';
+import 'package:vcshooks/src/utils/exceptions.dart';
 import 'package:io/ansi.dart';
 import 'package:io/io.dart';
 
@@ -73,7 +73,7 @@ const String _branchNamingRuleArgument = 'branch-naming-rule';
 
 const String _codeStyleCheckEnabledArgument = 'code-style-check-enabled';
 
-const String _unitTestsEnabledArgument = 'unit-tests-Enabled';
+const String _unitTestsEnabledArgument = 'unit-tests-enabled';
 
 const String _integrationTestsEnabledArgument = 'integration-tests-enabled';
 

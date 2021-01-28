@@ -36,9 +36,9 @@
 
 import 'dart:io';
 
-import 'package:hooks/src/config_cache.dart';
-import 'package:hooks/src/config_caches/file_config_cache.dart';
-import 'package:hooks/src/script_config.dart';
+import 'package:vcshooks/src/config_cache.dart';
+import 'package:vcshooks/src/config_caches/file_config_cache.dart';
+import 'package:vcshooks/src/script_config.dart';
 import 'package:test/test.dart';
 
 void main() {

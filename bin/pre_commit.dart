@@ -37,7 +37,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:hooks/hooks.dart';
+import 'package:vcshooks/vcshooks.dart';
 import 'package:io/ansi.dart';
 
 // Run the script with the provided [arguments].
@@ -50,7 +50,7 @@ Future<void> main(final List<String> arguments) async {
 
       final ScriptConfig config = await loadScriptConfig(os, Directory.current);
 
-      final HooksHandler handler = config.hookHandler(os);
+      final VCSHooksHandler handler = config.hookHandler(os);
 
       stdout.writeln(yellow.wrap('pre-commit checks in progress...'));
 

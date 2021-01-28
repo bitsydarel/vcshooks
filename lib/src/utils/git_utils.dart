@@ -34,62 +34,62 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import 'dart:async';
-import 'dart:io';
+import 'package:vcshooks/src/operating_system.dart';
 
-import 'package:args/args.dart';
-import 'package:hooks/hooks.dart';
+const String _hooksToolUrl =
+    'https://github.com/bitsydarel/vcshooks/releases/download/v0.1.0';
 
-Future<void> main(List<String> arguments) async {
-  ArgResults argResults;
+/// Flutter
+extension GitSupportedOperatingSystemExtensions on OperatingSystem {
+  /// Get the code style check tool download link.
+  String getPreCommitDownloadLink() {
+    switch (this) {
+      case OperatingSystem.windows:
+        return '$_hooksToolUrl/precommit-windows.exe';
+      case OperatingSystem.macOs:
+        return '$_hooksToolUrl/precommit-macos';
+      case OperatingSystem.linux:
+        return '$_hooksToolUrl/precommit-linux';
+    }
 
-  try {
-    argResults = argumentParser.parse(arguments);
-  } on Exception catch (_) {
-    printHelpMessage('Invalid parameter specified.');
-    exitCode = exitInvalidArgument;
-    return;
+    throw const UnsupportedOsException();
   }
 
-  if (argResults.wasParsed(helpArgument)) {
-    printHelpMessage();
-    exitCode = 0;
-    return;
+  /// Get the code style check file name.
+  String getPreCommitFileName() {
+    switch (this) {
+      case OperatingSystem.windows:
+      case OperatingSystem.macOs:
+      case OperatingSystem.linux:
+        return 'pre-commit';
+    }
+
+    throw const UnsupportedOsException();
   }
 
-  runZonedGuarded<void>(
-    () async {
-      final ScriptArgument scriptArgument = ScriptArgument.from(argResults);
-      final ScriptConfig scriptConfig = scriptArgument.toScriptConfig();
+  /// Get the code style check tool download link.
+  String getCommitMsgDownloadLink() {
+    switch (this) {
+      case OperatingSystem.windows:
+        return '$_hooksToolUrl/commit-msg-windows.exe';
+      case OperatingSystem.macOs:
+        return '$_hooksToolUrl/commit-msg-macos';
+      case OperatingSystem.linux:
+        return '$_hooksToolUrl/commit-msg-linux';
+    }
 
-      Directory.current = scriptArgument.projectDir.path;
+    throw const UnsupportedOsException();
+  }
 
-      final SoftwareDownloader downloader = scriptConfig.softwareDownloader(
-        scriptArgument.operatingSystem,
-      );
+  /// Get the code style check file name.
+  String getCommitMsgFileName() {
+    switch (this) {
+      case OperatingSystem.windows:
+      case OperatingSystem.macOs:
+      case OperatingSystem.linux:
+        return 'commit-msg';
+    }
 
-      await downloader.downloadPreCommitTools();
-
-      final HooksHandler initializer = scriptConfig.hookHandler(
-        scriptArgument.operatingSystem,
-      );
-
-      await initializer.setup();
-
-      final ConfigCache configCache = scriptConfig.cache();
-
-      await configCache.saveScriptConfig(scriptConfig);
-    },
-    (Object error, StackTrace stack) {
-      if (error is UnrecoverableException) {
-        printHelpMessage(error.reason);
-        exitCode = error.exitCode;
-        return;
-      } else {
-        printHelpMessage(error.toString());
-        exitCode = exitUnexpectedError;
-        return;
-      }
-    },
-  );
+    throw const UnsupportedOsException();
+  }
 }

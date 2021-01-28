@@ -36,16 +36,16 @@
 
 import 'dart:io';
 
-import 'package:hooks/src/config_cache.dart';
-import 'package:hooks/src/config_caches/file_config_cache.dart';
-import 'package:hooks/src/hooks_handler.dart';
-import 'package:hooks/src/hooks_handlers/dart_hooks_handler.dart';
-import 'package:hooks/src/hooks_handlers/flutter_hooks_handler.dart';
-import 'package:hooks/src/operating_system.dart';
-import 'package:hooks/src/software_downloader.dart';
-import 'package:hooks/src/software_downloader/dart_software_downloader.dart';
-import 'package:hooks/src/utils/exceptions.dart';
-import 'package:hooks/src/utils/script_utils.dart';
+import 'package:vcshooks/src/config_cache.dart';
+import 'package:vcshooks/src/config_caches/file_config_cache.dart';
+import 'package:vcshooks/src/vcs_hooks_handler.dart';
+import 'package:vcshooks/src/hooks_handlers/dart_hooks_handler.dart';
+import 'package:vcshooks/src/hooks_handlers/flutter_hooks_handler.dart';
+import 'package:vcshooks/src/operating_system.dart';
+import 'package:vcshooks/src/software_downloader.dart';
+import 'package:vcshooks/src/software_downloader/dart_software_downloader.dart';
+import 'package:vcshooks/src/utils/exceptions.dart';
+import 'package:vcshooks/src/utils/script_utils.dart';
 import 'package:io/io.dart';
 import 'package:meta/meta.dart';
 
@@ -184,8 +184,8 @@ extension ScriptConfigExtension on ScriptConfig {
     return FileConfigCache(hooksDir: hooksDir);
   }
 
-  /// Get the [HooksHandler] that match the current script configuration.
-  HooksHandler hookHandler(final OperatingSystem currentOs) {
+  /// Get the [VCSHooksHandler] that match the current script configuration.
+  VCSHooksHandler hookHandler(final OperatingSystem currentOs) {
     switch (projectType) {
       case dartProjectType:
         return DartHooksHandler(os: currentOs, config: this);

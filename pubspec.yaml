@@ -1,9 +1,9 @@
-name: hooks
+name: vcshooks
 description: A sample command-line application.
 version: 0.1.0
-homepage: https://github.com/bitsydarel/dart_github_hooks
-repository: https://github.com/bitsydarel/dart_github_hooks
-issue_tracker: https://github.com/bitsydarel/dart_github_hooks/issues
+homepage: https://github.com/bitsydarel/vcshooks
+repository: https://github.com/bitsydarel/vcshooks
+issue_tracker: https://github.com/bitsydarel/vcshooks/issues
 
 environment:
   sdk: '>=2.10.0 <3.0.0'
@@ -20,4 +20,4 @@ dev_dependencies:
   test: ^1.15.7
 
 executables:
-  hooks:
+  vcshooks:

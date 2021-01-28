@@ -34,14 +34,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import 'package:hooks/hooks.dart';
-import 'package:hooks/src/operating_system.dart';
-import 'package:hooks/src/script_config.dart';
+import 'package:vcshooks/src/operating_system.dart';
+import 'package:vcshooks/src/script_config.dart';
 import 'package:io/io.dart';
 import 'package:meta/meta.dart';
+import 'package:vcshooks/src/utils/exceptions.dart';
 
 /// Hooks handler that take care of handling related git hooks actions.
-abstract class HooksHandler {
+abstract class VCSHooksHandler {
   /// The [OperatingSystem] that the script is running on.
   final OperatingSystem operatingSystem;
 
@@ -49,7 +49,7 @@ abstract class HooksHandler {
   final ScriptConfig config;
 
   /// Create
-  const HooksHandler({
+  const VCSHooksHandler({
     @required this.operatingSystem,
     @required this.config,
   })  : assert(operatingSystem != null, "operating system can't be null"),

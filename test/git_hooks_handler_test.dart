@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import 'package:hooks/src/hooks_handlers/git_hooks_handler.dart';
+import 'package:vcshooks/src/hooks_handlers/git_hooks_handler.dart';
 import 'package:test/test.dart';
 
 void main() {

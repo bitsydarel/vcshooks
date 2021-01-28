@@ -36,7 +36,7 @@
 
 import 'dart:io';
 
-import 'package:hooks/src/operating_system.dart';
+import 'package:vcshooks/src/operating_system.dart';
 
 /// Script software downloader.
 ///
@@ -50,7 +50,7 @@ abstract class SoftwareDownloader {
 
   /// Const constructor to create a [SoftwareDownloader] with the [hooksDir] and
   /// [currentOs].
-  const SoftwareDownloader(this.hooksDir, this.currentOs);
+  const SoftwareDownloader(this.currentOs, this.hooksDir);
 
   /// Download the pre-commit tools.
   Future<void> downloadPreCommitTools();
