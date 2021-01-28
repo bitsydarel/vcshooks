@@ -73,7 +73,7 @@ const String _branchNamingRuleArgument = 'branch-naming-rule';
 
 const String _codeStyleCheckEnabledArgument = 'code-style-check-enabled';
 
-const String _unitTestsEnabledArgument = 'unit-tests-Enabled';
+const String _unitTestsEnabledArgument = 'unit-tests-enabled';
 
 const String _integrationTestsEnabledArgument = 'integration-tests-enabled';
 

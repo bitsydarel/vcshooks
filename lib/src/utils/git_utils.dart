@@ -40,7 +40,7 @@ const String _hooksToolUrl =
     'https://github.com/bitsydarel/hooks/releases/download/v0.1';
 
 /// Flutter
-extension FlutterSupportedOperatingSystemExtensions on OperatingSystem {
+extension GitSupportedOperatingSystemExtensions on OperatingSystem {
   /// Get the code style check tool download link.
   String getPreCommitDownloadLink() {
     switch (this) {
