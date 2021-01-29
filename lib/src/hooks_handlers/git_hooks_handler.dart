@@ -159,12 +159,19 @@ abstract class GitHooksHandler extends VCSHooksHandler {
       stderrEncoding: utf8,
     );
 
-    if (processResult.exitCode == ExitCode.success.code) {
+    final bool succeeded = processResult.exitCode == ExitCode.success.code;
+    final String fullOutput =
+        '${processResult.stdout.toString()}${processResult.stderr.toString()}'
+            .trim();
+
+    // When git hook dir has not yet been set for a project, git return empty
+    // output.
+    if (succeeded || fullOutput.isEmpty) {
       return Directory(processResult.stdout.toString().trim());
     } else {
       throw UnrecoverableException(
         'Could not get current git hooks directory\n'
-        'Error: ${processResult.stderr.toString()}',
+        '${processResult.stderr.toString()}',
         processResult.exitCode,
       );
     }
