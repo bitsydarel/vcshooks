@@ -35,7 +35,9 @@
  */
 
 void main(List<String> arguments) {
+  // should make commit fail because print is not allowed in production code.
   print(arguments.join(', '));
 }
 
+// should make commit fail because class is not used.
 class NotUsed {}

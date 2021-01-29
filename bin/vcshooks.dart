@@ -57,7 +57,7 @@ Future<void> main(List<String> arguments) async {
     return;
   }
 
-  runZonedGuarded<void>(
+  await runZonedGuarded<Future<void>>(
     () async {
       final ScriptArgument scriptArgument = ScriptArgument.from(argResults);
       final ScriptConfig scriptConfig = scriptArgument.toScriptConfig();

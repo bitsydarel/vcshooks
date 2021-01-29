@@ -42,7 +42,7 @@ import 'package:io/ansi.dart';
 import 'package:io/io.dart';
 
 /// Run the commit message check with the specified [arguments].
-Future<void> main(final List<String> arguments) async {
+void main(final List<String> arguments) {
   runZonedGuarded(
     () async {
       final File commitMessageFile = File(arguments.first);

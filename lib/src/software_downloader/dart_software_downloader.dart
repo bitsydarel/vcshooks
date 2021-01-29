@@ -71,7 +71,7 @@ class DartSoftwareDownloader extends GitSoftwareDownloader {
     try {
       final Uint8List response = await http.readBytes(staticAnalyzerLink);
 
-      staticAnalyzer.writeAsBytes(response, flush: true);
+      staticAnalyzer.writeAsBytesSync(response, flush: true);
 
       stdout.writeln('Downloaded $staticAnalyzerFileName for static analysis');
     } on http.ClientException catch (exception) {
