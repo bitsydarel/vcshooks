@@ -77,7 +77,7 @@ abstract class GitHooksHandler extends VCSHooksHandler {
     final Directory currentGitHooks = await getCurrentHooksDir();
 
     if (currentGitHooks != config.hooksDir) {
-      setCurrentHooksDir(config.hooksDir);
+      await setCurrentHooksDir(config.hooksDir);
     }
 
     _addHooksDirToGitIgnoreFile();

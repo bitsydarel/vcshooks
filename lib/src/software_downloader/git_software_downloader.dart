@@ -69,7 +69,7 @@ class GitSoftwareDownloader extends SoftwareDownloader {
     try {
       final Uint8List response = await http.readBytes(preCommitLink);
 
-      preCommitFile.writeAsBytes(response, flush: true);
+      preCommitFile.writeAsBytesSync(response, flush: true);
 
       stdout.writeln('Downloaded $preCommitFileName for pre-commit check');
     } on http.ClientException catch (exception) {
@@ -89,7 +89,7 @@ class GitSoftwareDownloader extends SoftwareDownloader {
     try {
       final Uint8List response = await http.readBytes(commitMsgLink);
 
-      commitMsgFile.writeAsBytes(response, flush: true);
+      commitMsgFile.writeAsBytesSync(response, flush: true);
 
       stdout.writeln('Downloaded $commitMsgFileName for commit message check');
     } on http.ClientException catch (exception) {

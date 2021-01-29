@@ -44,7 +44,7 @@ import 'package:io/ansi.dart';
 Future<void> main(final List<String> arguments) async {
   stdout.writeln(arguments.join(', '));
 
-  runZonedGuarded<void>(
+  await runZonedGuarded<Future<void>>(
     () async {
       final OperatingSystem os = getCurrentOs();
 
