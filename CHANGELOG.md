@@ -20,3 +20,7 @@
 
 - Added possibility to download native binary version of the script for each platform if the computer does not have dart
   installed.
+
+## 0.1.3
+
+- Changed behavior of the setup in such that if the hooks directory already exist it's should be deleted.

@@ -231,9 +231,10 @@ extension ArgResultsExtenstion on ArgResults {
     );
 
     try {
-      if (!hooksDir.existsSync()) {
-        hooksDir.createSync();
+      if (hooksDir.existsSync()) {
+        hooksDir.deleteSync(recursive: true);
       }
+      hooksDir.createSync();
     } on Exception catch (exception) {
       throw UnrecoverableException(
         'git hooks dir could not be created.\n'
