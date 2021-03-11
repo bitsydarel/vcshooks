@@ -24,3 +24,8 @@
 ## 0.1.3
 
 - Changed behavior of the setup in such that if the hooks directory already exist it's should be deleted.
+
+## 1.0.0-nullsafety.0
+
+- Updated the package to support dart null safe.
+- Updated dbstyleguidechecker tool to version 3.0.0-nullsafety.0
