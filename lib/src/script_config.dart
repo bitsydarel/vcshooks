@@ -47,9 +47,6 @@ import 'package:vcshooks/src/software_downloader/dart_software_downloader.dart';
 import 'package:vcshooks/src/utils/exceptions.dart';
 import 'package:vcshooks/src/utils/script_utils.dart';
 import 'package:io/io.dart';
-import 'package:meta/meta.dart';
-
-// ignore_for_file: avoid_as
 
 /// Script configuration for the current project.
 class ScriptConfig {
@@ -77,18 +74,13 @@ class ScriptConfig {
   /// Create the [ScriptConfig] with the specified [projectType], [projectDir],
   /// [hooksDir] and [preCommitConfig].
   const ScriptConfig({
-    @required this.operatingSystem,
-    @required this.projectType,
-    @required this.projectDir,
-    @required this.hooksDir,
-    @required this.commitMessageRule,
-    @required this.preCommitConfig,
-  })  : assert(operatingSystem != null, "Operating system can't be null"),
-        assert(projectType != null, "project type can't be null"),
-        assert(projectDir != null, "project directory can't be null"),
-        assert(hooksDir != null, "hooks directory can't be null"),
-        assert(commitMessageRule != null, "Commit message rule can't be null"),
-        assert(preCommitConfig != null, "preCommitConfig can't be null");
+    required this.operatingSystem,
+    required this.projectType,
+    required this.projectDir,
+    required this.hooksDir,
+    required this.commitMessageRule,
+    required this.preCommitConfig,
+  });
 
   /// Create json representation of the [ScriptConfig].
   Map<String, Object> toJson() {
@@ -103,15 +95,35 @@ class ScriptConfig {
   }
 
   /// Create a [ScriptConfig] from the provided [json].
-  ScriptConfig.fromJson(final Map<String, Object> json)
-      : operatingSystem = json['operatingSystem'] as String,
-        projectType = json['projectType'] as String,
-        projectDir = Directory(json['projectDir'] as String),
-        hooksDir = Directory(json['hooksDir'] as String),
-        commitMessageRule = json['commitMessageRule'] as String,
-        preCommitConfig = PreCommitConfig.fromJson(
-          json['preCommitConfig'] as Map<String, Object>,
-        );
+  factory ScriptConfig.fromJson(final Map<String, Object?> json) {
+    final Object? operatingSystem = json['operatingSystem'];
+    final Object? projectType = json['projectType'];
+    final Object? projectDir = json['projectDir'];
+    final Object? hooksDir = json['hooksDir'];
+    final Object? commitMessageRule = json['commitMessageRule'];
+    final Object? preCommitConfig = json['preCommitConfig'];
+
+    return ScriptConfig(
+      operatingSystem: operatingSystem is String
+          ? operatingSystem
+          : throw ArgumentError.value(operatingSystem, 'operatingSystem'),
+      projectType: projectType is String
+          ? projectType
+          : throw ArgumentError.value(projectType, 'projectType'),
+      projectDir: projectDir is String
+          ? Directory(projectDir)
+          : throw ArgumentError.value(projectDir, 'projectDir'),
+      hooksDir: hooksDir is String
+          ? Directory(hooksDir)
+          : throw ArgumentError.value(hooksDir, 'hooksDir'),
+      commitMessageRule: commitMessageRule is String
+          ? commitMessageRule
+          : throw ArgumentError.value(commitMessageRule, 'commitMessageRule'),
+      preCommitConfig: preCommitConfig is Map<String, Object?>
+          ? PreCommitConfig.fromJson(preCommitConfig)
+          : throw ArgumentError.value(preCommitConfig, 'preCommitConfig'),
+    );
+  }
 
   /// Get default hooks directory for the specified [projectDir].
   static Directory getDefaultHooksDir(final Directory projectDir) {
@@ -138,31 +150,46 @@ class PreCommitConfig {
 
   /// Create a [PreCommitConfig].
   const PreCommitConfig({
-    @required this.branchNamingRule,
-    @required this.codeStyleCheckEnabled,
-    @required this.unitTestsEnabled,
-    @required this.integrationTestsEnabled,
-    @required this.uiTestsEnabled,
-  })  : assert(branchNamingRule != null, "Branch naming rule can't b null"),
-        assert(
-          codeStyleCheckEnabled != null,
-          "code style check enabled can't be null",
-        ),
-        assert(unitTestsEnabled != null, "unit tests enabled can't be null"),
-        assert(
-          integrationTestsEnabled != null,
-          "integration tests enabled can't be null",
-        ),
-        assert(uiTestsEnabled != null, "UI tests enabled can't be null");
+    required this.branchNamingRule,
+    required this.codeStyleCheckEnabled,
+    required this.unitTestsEnabled,
+    required this.integrationTestsEnabled,
+    required this.uiTestsEnabled,
+  });
 
   /// Create the current [PreCommitConfig] from [json] represented as [Map] of
   /// key value pairs.
-  PreCommitConfig.fromJson(final Map<String, Object> json)
-      : branchNamingRule = json['branchNamingRule'] as String,
-        codeStyleCheckEnabled = json['codeStyleCheckEnabled'] as bool,
-        unitTestsEnabled = json['unitTestsEnabled'] as bool,
-        integrationTestsEnabled = json['integrationTestsEnabled'] as bool,
-        uiTestsEnabled = json['uiTestsEnabled'] as bool;
+  factory PreCommitConfig.fromJson(final Map<String, Object?> json) {
+    final Object? branchNamingRule = json['branchNamingRule'];
+    final Object? codeStyleCheckEnabled = json['codeStyleCheckEnabled'];
+    final Object? unitTestsEnabled = json['unitTestsEnabled'];
+    final Object? integrationTestsEnabled = json['integrationTestsEnabled'];
+    final Object? uiTestsEnabled = json['uiTestsEnabled'];
+
+    return PreCommitConfig(
+      branchNamingRule: branchNamingRule is String
+          ? branchNamingRule
+          : throw ArgumentError.value(branchNamingRule, 'branchNamingRule'),
+      codeStyleCheckEnabled: codeStyleCheckEnabled is bool
+          ? codeStyleCheckEnabled
+          : throw ArgumentError.value(
+              codeStyleCheckEnabled,
+              'codeStyleCheckEnabled',
+            ),
+      unitTestsEnabled: unitTestsEnabled is bool
+          ? unitTestsEnabled
+          : throw ArgumentError.value(unitTestsEnabled, 'unitTestsEnabled'),
+      integrationTestsEnabled: integrationTestsEnabled is bool
+          ? integrationTestsEnabled
+          : throw ArgumentError.value(
+              integrationTestsEnabled,
+              'integrationTestsEnabled',
+            ),
+      uiTestsEnabled: uiTestsEnabled is bool
+          ? uiTestsEnabled
+          : throw ArgumentError.value(uiTestsEnabled, 'uiTestsEnabled'),
+    );
+  }
 
   /// Convert the current [PreCommitConfig] to a json representation
   /// of key value pairs.
@@ -245,26 +272,6 @@ extension ScriptConfigExtension on ScriptConfig {
       throw UnrecoverableException(
         'Script was configured on $operatingSystem but now the project is run '
         'on  ${currentOs.name()}\nPlease run setup tool',
-        ExitCode.config.code,
-      );
-    }
-
-    if (commitMessageRule == null) {
-      throw UnrecoverableException(
-        'Commit message rule not found, in script config\n'
-        'Please run setup tool',
-        ExitCode.config.code,
-      );
-    }
-
-    if (preCommitConfig?.branchNamingRule == null ||
-        preCommitConfig?.codeStyleCheckEnabled == null ||
-        preCommitConfig?.unitTestsEnabled == null ||
-        preCommitConfig?.integrationTestsEnabled == null ||
-        preCommitConfig.uiTestsEnabled == null) {
-      throw UnrecoverableException(
-        'pre-commit configuration not found in script config\n'
-        'Please run setup tool',
         ExitCode.config.code,
       );
     }

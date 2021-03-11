@@ -51,8 +51,6 @@ extension GitSupportedOperatingSystemExtensions on OperatingSystem {
       case OperatingSystem.linux:
         return '$_hooksToolUrl/precommit-linux';
     }
-
-    throw const UnsupportedOsException();
   }
 
   /// Get the code style check file name.
@@ -63,8 +61,6 @@ extension GitSupportedOperatingSystemExtensions on OperatingSystem {
       case OperatingSystem.linux:
         return 'pre-commit';
     }
-
-    throw const UnsupportedOsException();
   }
 
   /// Get the code style check tool download link.
@@ -77,8 +73,6 @@ extension GitSupportedOperatingSystemExtensions on OperatingSystem {
       case OperatingSystem.linux:
         return '$_hooksToolUrl/commit-msg-linux';
     }
-
-    throw const UnsupportedOsException();
   }
 
   /// Get the code style check file name.
@@ -89,7 +83,5 @@ extension GitSupportedOperatingSystemExtensions on OperatingSystem {
       case OperatingSystem.linux:
         return 'commit-msg';
     }
-
-    throw const UnsupportedOsException();
   }
 }
