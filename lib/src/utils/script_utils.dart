@@ -136,7 +136,7 @@ void printHelpMessage([final String message]) {
       LineSplitter.split(argumentParser.usage).map((String l) => l).join('\n');
 
   stdout.writeln(
-    'Usage: dart_hooks --$_projectTypeArgument '
+    'Usage: vcshooks --$_projectTypeArgument '
     '[${supportedProjectType.join(', ')}] <local project directory>'
     '\nOptions:\n$options',
   );
