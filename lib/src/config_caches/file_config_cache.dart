@@ -39,21 +39,19 @@ import 'dart:io';
 
 import 'package:vcshooks/src/config_cache.dart';
 import 'package:vcshooks/src/script_config.dart';
-import 'package:meta/meta.dart';
 
 /// [ConfigCache] that save [ScriptConfig] to a file.
 class FileConfigCache extends ConfigCache {
-  ScriptConfig _cachedConfig;
+  ScriptConfig? _cachedConfig;
 
   final String _configFilePath;
 
   /// Create [FileConfigCache] with the specified [hooksDir].
-  FileConfigCache({@required Directory hooksDir})
-      : assert(hooksDir != null, "Hooks Directory can't be null"),
-        _configFilePath = '${hooksDir.path}/.script_config';
+  FileConfigCache({required Directory hooksDir})
+      : _configFilePath = '${hooksDir.path}/.script_config';
 
   @override
-  Future<ScriptConfig> loadScriptConfig() async {
+  Future<ScriptConfig?> loadScriptConfig() async {
     return _cachedConfig ??= await _loadFromFile();
   }
 
@@ -65,25 +63,25 @@ class FileConfigCache extends ConfigCache {
 
     final String jsonConfig = jsonEncode(mappedConfig);
 
-    configFile.writeAsStringSync(jsonConfig, mode: FileMode.write, flush: true);
+    configFile.writeAsStringSync(jsonConfig, flush: true);
   }
 
   @override
-  Future<ScriptConfig> refreshScriptConfig() async {
-    final ScriptConfig config = await _loadFromFile();
+  Future<ScriptConfig?> refreshScriptConfig() async {
+    final ScriptConfig? config = await _loadFromFile();
     _cachedConfig = config;
     return config;
   }
 
-  Future<ScriptConfig> _loadFromFile() async {
+  Future<ScriptConfig?> _loadFromFile() async {
     final File configFile = File(_configFilePath);
 
     if (configFile.existsSync()) {
       final String rawConfig = configFile.readAsStringSync();
 
-      final Object jsonConfig = jsonDecode(rawConfig);
+      final Object? jsonConfig = jsonDecode(rawConfig);
 
-      if (jsonConfig is Map<String, Object>) {
+      if (jsonConfig is Map<String, Object?>) {
         return ScriptConfig.fromJson(jsonConfig);
       }
     }

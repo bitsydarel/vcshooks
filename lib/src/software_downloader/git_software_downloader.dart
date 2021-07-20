@@ -67,7 +67,7 @@ class GitSoftwareDownloader extends SoftwareDownloader {
     final File preCommitFile = File('${hooksDir.path}/$preCommitFileName');
 
     try {
-      final Uint8List response = await http.readBytes(preCommitLink);
+      final Uint8List response = await http.readBytes(Uri.parse(preCommitLink));
 
       preCommitFile.writeAsBytesSync(response, flush: true);
 
@@ -87,7 +87,7 @@ class GitSoftwareDownloader extends SoftwareDownloader {
     final File commitMsgFile = File('${hooksDir.path}/$commitMsgFileName');
 
     try {
-      final Uint8List response = await http.readBytes(commitMsgLink);
+      final Uint8List response = await http.readBytes(Uri.parse(commitMsgLink));
 
       commitMsgFile.writeAsBytesSync(response, flush: true);
 

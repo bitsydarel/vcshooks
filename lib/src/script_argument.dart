@@ -39,7 +39,6 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:vcshooks/src/operating_system.dart';
 import 'package:vcshooks/src/script_config.dart';
-import 'package:meta/meta.dart';
 import 'package:vcshooks/src/utils/script_utils.dart';
 
 /// Script arguments.
@@ -78,41 +77,17 @@ class ScriptArgument {
 
   /// Create [ScriptArgument] with [projectType] and [projectDir].
   const ScriptArgument({
-    @required this.projectType,
-    @required this.projectDir,
-    @required this.operatingSystem,
-    @required this.hooksDir,
-    @required this.commitMessageRule,
-    @required this.branchNamingRule,
-    @required this.codeStyleCheckEnabled,
-    @required this.unitTestsEnabled,
-    @required this.integrationTestsEnabled,
-    @required this.uiTestsEnabled,
-  })  : assert(projectDir != null, 'Project Dir should be specified'),
-        assert(projectType != null, 'Project Type should be specified'),
-        assert(operatingSystem != null, 'Operating system should be specified'),
-        assert(hooksDir != null, 'Git hooks dir should be specified'),
-        assert(
-          commitMessageRule != null,
-          'Commit message name should be specified',
-        ),
-        assert(
-          branchNamingRule != null,
-          'Branch naming rules should be specified',
-        ),
-        assert(
-          codeStyleCheckEnabled != null,
-          'Code style check enabled should be specified',
-        ),
-        assert(
-          unitTestsEnabled != null,
-          'Unit tests enabled should be specified',
-        ),
-        assert(
-          integrationTestsEnabled != null,
-          'Integration tests enabled should be specified',
-        ),
-        assert(uiTestsEnabled != null, 'UI tests enabled should be specified');
+    required this.projectType,
+    required this.projectDir,
+    required this.operatingSystem,
+    required this.hooksDir,
+    required this.commitMessageRule,
+    required this.branchNamingRule,
+    required this.codeStyleCheckEnabled,
+    required this.unitTestsEnabled,
+    required this.integrationTestsEnabled,
+    required this.uiTestsEnabled,
+  });
 
   /// Create a [ScriptArgument] from the provided [args].
   factory ScriptArgument.from(final ArgResults args) {

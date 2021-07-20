@@ -41,14 +41,13 @@ import 'package:vcshooks/src/operating_system.dart';
 import 'package:vcshooks/src/script_config.dart';
 import 'package:vcshooks/src/utils/exceptions.dart';
 import 'package:io/io.dart';
-import 'package:meta/meta.dart';
 
 /// Flutter hooks handler take care of executing hooks on a flutter project.
 class FlutterHooksHandler extends DartHooksHandler {
   ///
   FlutterHooksHandler({
-    @required OperatingSystem os,
-    @required ScriptConfig config,
+    required OperatingSystem os,
+    required ScriptConfig config,
   }) : super(os: os, config: config);
 
   @override
@@ -65,7 +64,7 @@ class FlutterHooksHandler extends DartHooksHandler {
     final List<DartTest> tests = executeTest(
       'flutter',
       <String>['test', '--machine', testDir.path],
-    ).where((DartTest element) => !element.succeeded).toList();
+    ).where((DartTest element) => element.succeeded == false).toList();
 
     if (tests.isNotEmpty) {
       return tests.map((DartTest e) => e.toString()).join('\n');

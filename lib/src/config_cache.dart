@@ -42,8 +42,8 @@ abstract class ConfigCache {
   Future<void> saveScriptConfig(final ScriptConfig config);
 
   /// Load the script's configuration.
-  Future<ScriptConfig> loadScriptConfig();
+  Future<ScriptConfig?> loadScriptConfig();
 
   /// Refresh the script's configuration.
-  Future<ScriptConfig> refreshScriptConfig();
+  Future<ScriptConfig?> refreshScriptConfig();
 }

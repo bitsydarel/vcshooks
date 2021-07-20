@@ -200,7 +200,7 @@ void main() {
 }
 
 extension Stringify on RegExp {
-  String matchAll(final String input) {
+  String? matchAll(final String input) {
     return stringMatch(input);
   }
 }

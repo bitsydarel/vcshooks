@@ -37,7 +37,7 @@
 import 'package:vcshooks/src/operating_system.dart';
 
 const String _dbstyleguidecheckerUrl =
-    'https://github.com/bitsydarel/dbstyleguidechecker/releases/download/v2.0.5';
+    'https://github.com/bitsydarel/dbstyleguidechecker/releases/download/v3.0.0-nullsafety.0';
 
 /// Dart extensions of [OperatingSystem].
 extension DartSupportedOperatingSystemExtensions on OperatingSystem {
@@ -51,8 +51,6 @@ extension DartSupportedOperatingSystemExtensions on OperatingSystem {
       case OperatingSystem.linux:
         return '$_dbstyleguidecheckerUrl/${getCodeStyleCheckFileName()}';
     }
-
-    throw const UnsupportedOsException();
   }
 
   /// Get the code style check file name.
@@ -65,7 +63,5 @@ extension DartSupportedOperatingSystemExtensions on OperatingSystem {
       case OperatingSystem.linux:
         return 'dbstyleguidechecker-linux';
     }
-
-    throw const UnsupportedOsException();
   }
 }

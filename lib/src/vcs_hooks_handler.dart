@@ -50,10 +50,9 @@ abstract class VCSHooksHandler {
 
   /// Create
   const VCSHooksHandler({
-    @required this.operatingSystem,
-    @required this.config,
-  })  : assert(operatingSystem != null, "operating system can't be null"),
-        assert(config != null, "config can't be null");
+    required this.operatingSystem,
+    required this.config,
+  });
 
   /// Setup the hook handler.
   Future<void> setup();
@@ -66,7 +65,7 @@ abstract class VCSHooksHandler {
   Future<void> executePreCommitChecks() async {
     final String branchNamingViolation = await executeBranchNamingCheck();
 
-    if (branchNamingViolation?.isNotEmpty == true) {
+    if (branchNamingViolation.isNotEmpty == true) {
       throw UnrecoverableException(
         branchNamingViolation,
         ExitCode.software.code,
@@ -76,7 +75,7 @@ abstract class VCSHooksHandler {
     if (config.preCommitConfig.codeStyleCheckEnabled) {
       final String codeStyleViolations = await executeCodeStyleCheck();
 
-      if (codeStyleViolations?.isNotEmpty == true) {
+      if (codeStyleViolations.isNotEmpty == true) {
         throw UnrecoverableException(
           codeStyleViolations,
           ExitCode.software.code,
@@ -87,7 +86,7 @@ abstract class VCSHooksHandler {
     if (config.preCommitConfig.unitTestsEnabled) {
       final String unitTestsResult = await executeUnitTests();
 
-      if (unitTestsResult?.isNotEmpty == true) {
+      if (unitTestsResult.isNotEmpty == true) {
         throw UnrecoverableException(unitTestsResult, ExitCode.software.code);
       }
     }
@@ -95,7 +94,7 @@ abstract class VCSHooksHandler {
     if (config.preCommitConfig.integrationTestsEnabled) {
       final String integrationTests = await executeIntegrationTests();
 
-      if (integrationTests?.isNotEmpty == true) {
+      if (integrationTests.isNotEmpty == true) {
         throw UnrecoverableException(integrationTests, ExitCode.software.code);
       }
     }
@@ -103,7 +102,7 @@ abstract class VCSHooksHandler {
     if (config.preCommitConfig.uiTestsEnabled) {
       final String uiTests = await executeUiTests();
 
-      if (uiTests?.isNotEmpty == true) {
+      if (uiTests.isNotEmpty == true) {
         throw UnrecoverableException(uiTests, ExitCode.software.code);
       }
     }

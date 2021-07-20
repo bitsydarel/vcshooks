@@ -68,8 +68,8 @@ abstract class GitHooksHandler extends VCSHooksHandler {
 
   /// Create a [GitHooksHandler] with the provided [os], [config].
   GitHooksHandler({
-    @required OperatingSystem os,
-    @required ScriptConfig config,
+    required OperatingSystem os,
+    required ScriptConfig config,
   }) : super(operatingSystem: os, config: config);
 
   @override
