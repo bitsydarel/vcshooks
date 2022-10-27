@@ -1,6 +1,6 @@
 name: vcshooks
 description: A commit tool that help you execute repository and code check on vcs events.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/bitsydarel/vcshooks
 repository: https://github.com/bitsydarel/vcshooks
 issue_tracker: https://github.com/bitsydarel/vcshooks/issues

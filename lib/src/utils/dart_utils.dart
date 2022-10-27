@@ -37,7 +37,7 @@
 import 'package:vcshooks/src/operating_system.dart';
 
 const String _dbstyleguidecheckerUrl =
-    'https://github.com/bitsydarel/dbstyleguidechecker/releases/download/v3.0.2';
+    'https://github.com/bitsydarel/dbstyleguidechecker/releases/download/v3.0.3';
 
 /// Dart extensions of [OperatingSystem].
 extension DartSupportedOperatingSystemExtensions on OperatingSystem {
