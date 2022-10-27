@@ -79,7 +79,7 @@ jobs:
           allowUpdates: true
           artifactErrorsFailBuild: true
           replacesArtifacts: true
-          artifacts: "bin/vcshooks-linux,bin/precommit-linux,commit-msg-linux"
+          artifacts: "bin/vcshooks-linux,bin/precommit-linux,bin/commit-msg-linux"
 
   release-macos:
     needs: [ release ]
