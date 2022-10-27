@@ -33,4 +33,4 @@
 ## 1.0.1
 
 - Add support for windows shell
-- Use dbstyleguidechecker version 3.0.1
+- Use dbstyleguidechecker version 3.0.2
