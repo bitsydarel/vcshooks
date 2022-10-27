@@ -37,9 +37,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:vcshooks/vcshooks.dart';
 import 'package:io/ansi.dart';
 import 'package:io/io.dart';
+import 'package:vcshooks/vcshooks.dart';
 
 /// Run the commit message check with the specified [arguments].
 void main(final List<String> arguments) {

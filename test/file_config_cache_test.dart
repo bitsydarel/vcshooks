@@ -36,10 +36,10 @@
 
 import 'dart:io';
 
+import 'package:test/test.dart';
 import 'package:vcshooks/src/config_cache.dart';
 import 'package:vcshooks/src/config_caches/file_config_cache.dart';
 import 'package:vcshooks/src/script_config.dart';
-import 'package:test/test.dart';
 
 void main() {
   group(

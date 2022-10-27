@@ -36,9 +36,9 @@
 
 import 'dart:io';
 
+import 'package:io/io.dart';
 import 'package:vcshooks/src/config_cache.dart';
 import 'package:vcshooks/src/config_caches/file_config_cache.dart';
-import 'package:vcshooks/src/vcs_hooks_handler.dart';
 import 'package:vcshooks/src/hooks_handlers/dart_hooks_handler.dart';
 import 'package:vcshooks/src/hooks_handlers/flutter_hooks_handler.dart';
 import 'package:vcshooks/src/operating_system.dart';
@@ -46,7 +46,7 @@ import 'package:vcshooks/src/software_downloader.dart';
 import 'package:vcshooks/src/software_downloader/dart_software_downloader.dart';
 import 'package:vcshooks/src/utils/exceptions.dart';
 import 'package:vcshooks/src/utils/script_utils.dart';
-import 'package:io/io.dart';
+import 'package:vcshooks/src/vcs_hooks_handler.dart';
 
 /// Script configuration for the current project.
 class ScriptConfig {

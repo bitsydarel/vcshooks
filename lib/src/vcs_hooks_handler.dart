@@ -34,10 +34,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import 'package:vcshooks/src/operating_system.dart';
-import 'package:vcshooks/src/script_config.dart';
 import 'package:io/io.dart';
 import 'package:meta/meta.dart';
+import 'package:vcshooks/src/operating_system.dart';
+import 'package:vcshooks/src/script_config.dart';
 import 'package:vcshooks/src/utils/exceptions.dart';
 
 /// Hooks handler that take care of handling related git hooks actions.

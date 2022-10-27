@@ -1,23 +1,23 @@
 name: vcshooks
 description: A commit tool that help you execute repository and code check on vcs events.
-version: 1.0.0-nullsafety.0
+version: 1.0.1
 homepage: https://github.com/bitsydarel/vcshooks
 repository: https://github.com/bitsydarel/vcshooks
 issue_tracker: https://github.com/bitsydarel/vcshooks/issues
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.18.1 <3.0.0'
 
 dependencies:
-  args: ^2.0.0
-  http: ^0.13.0
-  io: ^1.0.0
-  meta: ^1.3.0
-  path: ^1.8.0
+  args: '>=2.0.0 <3.0.0'
+  http: '>=0.13.0 <1.0.0'
+  io: '>=1.0.0 <2.0.0'
+  meta: '>=1.3.0 <2.0.0'
+  path: '>=1.8.0 <2.0.0'
 
 dev_dependencies:
-  flutter_code_style: ^2.0.2
-  test: ^1.16.7
+  flutter_code_style: ^2.1.1
+  test: '>=1.16.7 <2.0.0'
 
 executables:
   vcshooks:
