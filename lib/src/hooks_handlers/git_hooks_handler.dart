@@ -38,13 +38,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:vcshooks/src/vcs_hooks_handler.dart';
-import 'package:vcshooks/src/operating_system.dart';
-import 'package:vcshooks/src/script_config.dart';
-import 'package:vcshooks/src/utils/exceptions.dart';
 import 'package:io/io.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
+import 'package:vcshooks/src/operating_system.dart';
+import 'package:vcshooks/src/script_config.dart';
+import 'package:vcshooks/src/utils/exceptions.dart';
+import 'package:vcshooks/src/vcs_hooks_handler.dart';
 
 /// Git hooks handler that take care of handling related git hooks actions.
 abstract class GitHooksHandler extends VCSHooksHandler {
@@ -90,6 +90,7 @@ abstract class GitHooksHandler extends VCSHooksHandler {
     final ProcessResult processResult = Process.runSync(
       permissionTool,
       permissionToolArgs,
+      runInShell: Platform.isWindows,
     );
 
     if (processResult.exitCode != ExitCode.success.code) {
@@ -120,7 +121,7 @@ abstract class GitHooksHandler extends VCSHooksHandler {
     final ProcessResult processResult = Process.runSync(
       'git',
       <String>['branch', '--show-current'],
-      runInShell: true,
+      runInShell: Platform.isWindows,
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     );
@@ -154,7 +155,7 @@ abstract class GitHooksHandler extends VCSHooksHandler {
     final ProcessResult processResult = Process.runSync(
       'git',
       <String>['config', '--get', 'core.hooksPath'],
-      runInShell: true,
+      runInShell: Platform.isWindows,
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     );
@@ -183,7 +184,7 @@ abstract class GitHooksHandler extends VCSHooksHandler {
     final ProcessResult processResult = Process.runSync(
       'git',
       <String>['config', 'core.hooksPath', newHooksDir.path],
-      runInShell: true,
+      runInShell: Platform.isWindows,
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     );

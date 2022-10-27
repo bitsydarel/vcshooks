@@ -36,11 +36,11 @@
 
 library vcshooks;
 
+export 'package:vcshooks/src/config_cache.dart';
 export 'package:vcshooks/src/operating_system.dart';
-export 'package:vcshooks/src/utils/script_utils.dart';
-export 'package:vcshooks/src/software_downloader.dart';
-export 'package:vcshooks/src/utils/exceptions.dart';
-export 'package:vcshooks/src/vcs_hooks_handler.dart';
 export 'package:vcshooks/src/script_argument.dart';
 export 'package:vcshooks/src/script_config.dart';
-export 'package:vcshooks/src/config_cache.dart';
+export 'package:vcshooks/src/software_downloader.dart';
+export 'package:vcshooks/src/utils/exceptions.dart';
+export 'package:vcshooks/src/utils/script_utils.dart';
+export 'package:vcshooks/src/vcs_hooks_handler.dart';

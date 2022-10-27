@@ -37,7 +37,7 @@
 import 'package:vcshooks/src/operating_system.dart';
 
 const String _hooksToolUrl =
-    'https://github.com/bitsydarel/vcshooks/releases/download/v0.1.3';
+    'https://github.com/bitsydarel/vcshooks/releases/download/v1.0.1';
 
 /// Flutter
 extension GitSupportedOperatingSystemExtensions on OperatingSystem {

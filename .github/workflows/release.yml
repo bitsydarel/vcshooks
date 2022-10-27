@@ -9,15 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # Note that this workflow uses the latest stable version of the Dart SDK.
-    # Docker images for other release channels - like dev and beta - are also
-    # available. See https://hub.docker.com/r/google/dart/ for the available
-    # images.
-    container:
-      image: google/dart:latest
-
     steps:
       - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1.3
 
       - name: Print Dart SDK version
         run: dart --version
@@ -35,6 +29,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1.3
 
       - name: Get the tag name
         id: get_tag_name
@@ -57,11 +52,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    container:
-      image: google/dart:latest
-
     steps:
       - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1.3
 
       - name: Print Dart SDK version
         run: dart --version
@@ -70,52 +63,23 @@ jobs:
         run: dart pub get
 
       - name: Generate linux vcshooks native binary
-        run: dart2native bin/vcshooks.dart -o bin/vcshooks-linux
+        run: dart compile exe bin/vcshooks.dart -o bin/vcshooks-linux
 
       - name: Generate linux pre-commit native binary
-        run: dart2native bin/pre_commit.dart -o bin/precommit-linux
+        run: dart compile exe bin/pre_commit.dart -o bin/precommit-linux
 
       - name: Generate linux commit-msg native binary
-        run: dart2native bin/commit_msg.dart -o bin/commit-msg-linux
-
-      - name: Get release
-        id: get_release
-        uses: bruceadams/get-release@v1.2.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: dart compile exe bin/commit_msg.dart -o bin/commit-msg-linux
 
       - name: Upload Linux vcshooks Build Artifact
-        id: upload-vcshooks-release-asset
-        uses: actions/upload-release-asset@v1
+        uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/vcshooks-linux
-          asset_name: vcshooks-linux
-          asset_content_type: application/octet-stream
-
-      - name: Upload Linux pre-commit Build Artifact
-        id: upload-pre-commit-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/precommit-linux
-          asset_name: precommit-linux
-          asset_content_type: application/octet-stream
-
-      - name: Upload Linux commit-msg Build Artifact
-        id: upload-commit-msg-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/commit-msg-linux
-          asset_name: commit-msg-linux
-          asset_content_type: application/octet-stream
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          replacesArtifacts: true
+          artifacts: "bin/vcshooks-linux,bin/precommit-linux,commit-msg-linux"
 
   release-macos:
     needs: [ release ]
@@ -124,12 +88,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install brew dart repo
-        run: brew tap dart-lang/dart
-
-      - name: Install dart with brew
-        run: brew install dart
+      - uses: dart-lang/setup-dart@v1.3
 
       - name: Print Dart SDK version
         run: dart --version
@@ -138,52 +97,23 @@ jobs:
         run: dart pub get
 
       - name: Generate MacOs vcshooks native binary
-        run: dart2native bin/vcshooks.dart -o bin/vcshooks-macos
+        run: dart compile exe bin/vcshooks.dart -o bin/vcshooks-macos
 
       - name: Generate MacOs pre-commit native binary
-        run: dart2native bin/pre_commit.dart -o bin/precommit-macos
+        run: dart compile exe bin/pre_commit.dart -o bin/precommit-macos
 
       - name: Generate MacOs commit-msg native binary
-        run: dart2native bin/commit_msg.dart -o bin/commit-msg-macos
-
-      - name: Get release
-        id: get_release
-        uses: bruceadams/get-release@v1.2.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: dart compile exe bin/commit_msg.dart -o bin/commit-msg-macos
 
       - name: Upload MacOs vcshooks Build Artifact
-        id: upload-vcshooks-release-asset
-        uses: actions/upload-release-asset@v1
+        uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/vcshooks-macos
-          asset_name: vcshooks-macos
-          asset_content_type: application/octet-stream
-
-      - name: Upload MacOs pre-commit Build Artifact
-        id: upload-pre-commit-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/precommit-macos
-          asset_name: precommit-macos
-          asset_content_type: application/octet-stream
-
-      - name: Upload MacOs commit-msg Build Artifact
-        id: upload-commit-msg-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/commit-msg-macos
-          asset_name: commit-msg-macos
-          asset_content_type: application/octet-stream
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          replacesArtifacts: true
+          artifacts: "bin/vcshooks-macos,bin/precommit-macos,bin/commit-msg-macos"
 
   release-windows:
     needs: [ release ]
@@ -192,14 +122,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install Dart SDK
-        uses: crazy-max/ghaction-chocolatey@v1
-        with:
-          args: install dart-sdk
-
-      - name: Update Environment variable using GITHUB path to include dart binaries
-        run: echo "C:\tools\dart-sdk\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - uses: dart-lang/setup-dart@v1.3
 
       - name: Print Dart SDK version
         run: dart --version
@@ -208,49 +131,21 @@ jobs:
         run: dart pub get
 
       - name: Generate Windows vcshooks native binary
-        run: dart2native bin/vcshooks.dart -o bin/vcshooks-windows.exe
+        run: dart compile exe bin/vcshooks.dart -o bin/vcshooks-windows.exe
 
       - name: Generate Windows pre-commit native binary
-        run: dart2native bin/pre_commit.dart -o bin/precommit-windows.exe
+        run: dart compile exe bin/pre_commit.dart -o bin/precommit-windows.exe
 
       - name: Generate Windows commit-msg native binary
-        run: dart2native bin/commit_msg.dart -o bin/commit-msg-windows.exe
-
-      - name: Get release
-        id: get_release
-        uses: bruceadams/get-release@v1.2.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: dart compile exe bin/commit_msg.dart -o bin/commit-msg-windows.exe
 
       - name: Upload Windows vcshooks Build Artifact
-        id: upload-vcshooks-release-asset
-        uses: actions/upload-release-asset@v1
+        uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/vcshooks-windows.exe
-          asset_name: vcshooks-windows.exe
-          asset_content_type: application/octet-stream
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          replacesArtifacts: true
+          artifacts: "bin/vcshooks-windows.exe,bin/precommit-windows.exe,bin/commit-msg-windows.exe"
 
-      - name: Upload Windows pre-commit Build Artifact
-        id: upload-pre-commit-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/precommit-windows.exe
-          asset_name: precommit-windows.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload Windows commit-msg Build Artifact
-        id: upload-commit-msg-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./bin/commit-msg-windows.exe
-          asset_name: commit-msg-windows.exe
-          asset_content_type: application/octet-stream

@@ -29,3 +29,8 @@
 
 - Updated the package to support dart null safe.
 - Updated dbstyleguidechecker tool to version 3.0.0-nullsafety.0
+
+## 1.0.1
+
+- Add support for windows shell
+- Use dbstyleguidechecker version 3.0.1

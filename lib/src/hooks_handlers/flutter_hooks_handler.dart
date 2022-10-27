@@ -36,11 +36,11 @@
 
 import 'dart:io';
 
+import 'package:io/io.dart';
 import 'package:vcshooks/src/hooks_handlers/dart_hooks_handler.dart';
 import 'package:vcshooks/src/operating_system.dart';
 import 'package:vcshooks/src/script_config.dart';
 import 'package:vcshooks/src/utils/exceptions.dart';
-import 'package:io/io.dart';
 
 /// Flutter hooks handler take care of executing hooks on a flutter project.
 class FlutterHooksHandler extends DartHooksHandler {

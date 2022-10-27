@@ -37,13 +37,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:vcshooks/src/hooks_handlers/git_hooks_handler.dart';
-import 'package:vcshooks/src/script_config.dart';
-import 'package:vcshooks/src/utils/dart_utils.dart';
-import 'package:vcshooks/src/operating_system.dart';
-import 'package:vcshooks/src/utils/exceptions.dart';
 import 'package:io/io.dart';
 import 'package:meta/meta.dart';
+import 'package:vcshooks/src/hooks_handlers/git_hooks_handler.dart';
+import 'package:vcshooks/src/operating_system.dart';
+import 'package:vcshooks/src/script_config.dart';
+import 'package:vcshooks/src/utils/dart_utils.dart';
+import 'package:vcshooks/src/utils/exceptions.dart';
 
 /// Dart git hooks handler.
 class DartHooksHandler extends GitHooksHandler {
@@ -68,7 +68,7 @@ class DartHooksHandler extends GitHooksHandler {
         'console',
         config.projectDir.path
       ],
-      runInShell: true,
+      runInShell: Platform.isWindows,
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     );
@@ -105,8 +105,8 @@ class DartHooksHandler extends GitHooksHandler {
     }
 
     final List<DartTest> tests = executeTest(
-      'pub',
-      <String>['run', 'test', '-r', 'json', testDir.path],
+      'dart',
+      <String>['test', '-r', 'json', testDir.path],
     ).where((DartTest element) => element.succeeded == false).toList();
 
     if (tests.isNotEmpty) {
@@ -138,7 +138,7 @@ class DartHooksHandler extends GitHooksHandler {
     final ProcessResult result = Process.runSync(
       tool,
       toolArgs,
-      runInShell: true,
+      runInShell: Platform.isWindows,
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     );

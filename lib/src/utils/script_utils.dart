@@ -36,17 +36,17 @@
 
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:args/args.dart';
+import 'package:io/ansi.dart';
+import 'package:io/io.dart';
+import 'package:path/path.dart' as path;
 import 'package:vcshooks/src/config_cache.dart';
 import 'package:vcshooks/src/config_caches/file_config_cache.dart';
 import 'package:vcshooks/src/hooks_handlers/git_hooks_handler.dart';
 import 'package:vcshooks/src/operating_system.dart';
 import 'package:vcshooks/src/script_config.dart';
 import 'package:vcshooks/src/utils/exceptions.dart';
-import 'package:io/ansi.dart';
-import 'package:io/io.dart';
-
-import 'package:args/args.dart';
-import 'package:path/path.dart' as path;
 
 const String _projectTypeArgument = 'project-type';
 

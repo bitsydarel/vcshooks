@@ -37,8 +37,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:vcshooks/vcshooks.dart';
 import 'package:io/ansi.dart';
+import 'package:vcshooks/vcshooks.dart';
 
 // Run the script with the provided [arguments].
 Future<void> main(final List<String> arguments) async {
